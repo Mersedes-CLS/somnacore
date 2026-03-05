@@ -25,18 +25,18 @@ Arduino sketch for ESP32 + VL53L0X (GY-530) laser distance sensor. Measures dist
 Power via VIN (5V), not 3.3V — sensor was not detected on 3.3V with this board.
 XSHUT wire prevents floating XSHUT from putting sensor into standby. Alternative: solder XSHUT to VCC on the GY-530 board.
 
-## Build & Upload (Arduino IDE 2.x)
+## Build & Upload (PlatformIO)
 
-- Board: **ESP32 Dev Module**
-- Upload Speed: 115200 (lower is more reliable for this board)
-- Serial Monitor: **115200 baud**
+- `pio run` — сборка
+- `pio run -t upload` — прошивка на ESP32
+- `pio device monitor` — serial monitor (115200 baud)
 - **Disconnect sensor wires before uploading** — they interfere with flash programming
 - Upload requires manual boot mode: press Upload → when `Connecting...` appears, hold BOOT + tap EN + release BOOT
 
 ## Libraries
 
-- **VL53L0X by Pololu** (1.3.1) — use this, not Adafruit
-- Wire.h (built-in)
+No external libraries — Wire.h, WiFi.h, WebServer.h are built into ESP32 Arduino framework.
+VL53L0X controlled via direct register access (no Pololu/Adafruit library).
 
 ## Known Issues
 

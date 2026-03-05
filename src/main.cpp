@@ -1,10 +1,21 @@
+#include <Arduino.h>
+
 // VL53L0X Direct Register Access — no libraries, just Wire.h
 // Avoids ESP32 I2C driver crash from rapid bulk transactions
 
 #include <Wire.h>
+#include <WiFi.h>
+#include <WebServer.h>
 
 #define ADDR 0x29
 #define XSHUT_PIN 16
+
+// WiFi credentials — replace with your network
+const char* WIFI_SSID = "TP-Link_1018";
+const char* WIFI_PASS = "46657763";
+
+WebServer server(80);
+volatile uint16_t lastDistance = 0;
 
 static uint8_t stop_variable = 0;
 
@@ -72,6 +83,8 @@ void writeReg16(uint8_t reg, uint16_t val) {
 }
 
 // --- Initialization ---
+
+bool doSingleRef(uint8_t vhv_init_byte);
 
 bool initSensor() {
   // 1. Verify Model ID
@@ -228,6 +241,57 @@ bool resetSensor() {
   return initSensor();
 }
 
+// --- Web server handlers ---
+
+const char INDEX_HTML[] PROGMEM = R"rawliteral(
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LAZER Gym Tracker</title>
+<style>
+body { background: #1a1a2e; color: #e0e0e0; font-family: sans-serif;
+       display: flex; flex-direction: column; align-items: center;
+       justify-content: center; min-height: 100vh; margin: 0; }
+h1 { color: #00d4ff; margin-bottom: 0.2em; }
+#dist { font-size: 8em; font-weight: bold; color: #00ff88; }
+#unit { font-size: 2em; color: #888; }
+#status { margin-top: 1em; font-size: 0.9em; color: #666; }
+</style>
+</head>
+<body>
+<h1>LAZER Gym Tracker</h1>
+<div id="dist">--</div>
+<div id="unit">mm</div>
+<div id="status">connecting...</div>
+<script>
+async function poll() {
+  try {
+    const r = await fetch('/distance');
+    const d = await r.json();
+    document.getElementById('dist').textContent = d.distance_mm;
+    document.getElementById('status').textContent = 'live';
+  } catch(e) {
+    document.getElementById('status').textContent = 'offline';
+  }
+}
+setInterval(poll, 500);
+poll();
+</script>
+</body>
+</html>
+)rawliteral";
+
+void handleRoot() {
+  server.send(200, "text/html", INDEX_HTML);
+}
+
+void handleDistance() {
+  String json = "{\"distance_mm\":" + String(lastDistance) + "}";
+  server.send(200, "application/json", json);
+}
+
 // --- Main ---
 
 bool sensorOK = false;
@@ -297,9 +361,30 @@ void setup() {
   delay(100);
 
   sensorOK = initSensor();
+
+  // Connect to WiFi
+  Serial.print("Connecting to WiFi");
+  WiFi.begin(WIFI_SSID, WIFI_PASS);
+  int wifiAttempts = 0;
+  while (WiFi.status() != WL_CONNECTED && wifiAttempts < 20) {
+    delay(500);
+    Serial.print(".");
+    wifiAttempts++;
+  }
+  Serial.println();
+  Serial.print("IP: ");
+  Serial.println(WiFi.localIP());
+
+  // Start web server
+  server.on("/", handleRoot);
+  server.on("/distance", handleDistance);
+  server.begin();
+  Serial.println("Web server started");
 }
 
 void loop() {
+  server.handleClient();
+
   if (!sensorOK) {
     sensorOK = resetSensor();
     if (!sensorOK) {
@@ -323,6 +408,7 @@ void loop() {
   }
 
   errorCount = 0;
+  lastDistance = dist;
   if (dist != 0) {
     Serial.print("Distance: ");
     Serial.print(dist);
