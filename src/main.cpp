@@ -220,6 +220,47 @@ uint16_t readDistance() {
   return dist;
 }
 
+// --- Median filter (5 samples, kills spikes) ---
+
+#define FILTER_SIZE 5
+#define DIST_MIN 30
+#define DIST_MAX 2000
+
+uint16_t filterBuf[FILTER_SIZE];
+uint8_t filterIdx = 0;
+bool filterFull = false;
+
+uint16_t medianOfFive(uint16_t a[]) {
+  uint16_t tmp[FILTER_SIZE];
+  memcpy(tmp, a, sizeof(tmp));
+  // Simple insertion sort
+  for (int i = 1; i < FILTER_SIZE; i++) {
+    uint16_t key = tmp[i];
+    int j = i - 1;
+    while (j >= 0 && tmp[j] > key) { tmp[j + 1] = tmp[j]; j--; }
+    tmp[j + 1] = key;
+  }
+  return tmp[FILTER_SIZE / 2];
+}
+
+uint16_t filteredDistance() {
+  uint16_t raw = readDistance();
+  if (raw == 0xFFFF) return 0xFFFF;
+
+  // Clamp out-of-range to last good value
+  if (raw < DIST_MIN || raw > DIST_MAX) {
+    if (filterFull) return medianOfFive(filterBuf);
+    return 0xFFFF;
+  }
+
+  filterBuf[filterIdx] = raw;
+  filterIdx = (filterIdx + 1) % FILTER_SIZE;
+  if (filterIdx == 0) filterFull = true;
+
+  if (!filterFull) return raw;
+  return medianOfFive(filterBuf);
+}
+
 // --- Full sensor reset (XSHUT cycle + re-init) ---
 
 bool resetSensor() {
@@ -251,32 +292,152 @@ const char INDEX_HTML[] PROGMEM = R"rawliteral(
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>LAZER Gym Tracker</title>
 <style>
-body { background: #1a1a2e; color: #e0e0e0; font-family: sans-serif;
-       display: flex; flex-direction: column; align-items: center;
-       justify-content: center; min-height: 100vh; margin: 0; }
-h1 { color: #00d4ff; margin-bottom: 0.2em; }
-#dist { font-size: 8em; font-weight: bold; color: #00ff88; }
-#unit { font-size: 2em; color: #888; }
-#status { margin-top: 1em; font-size: 0.9em; color: #666; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #0a0a1a; color: #e0e0e0; font-family: -apple-system, sans-serif;
+       padding: 20px; min-height: 100vh; }
+h1 { color: #00d4ff; text-align: center; font-size: 1.4em; margin-bottom: 16px; }
+.cards { display: flex; gap: 12px; margin-bottom: 16px; justify-content: center; flex-wrap: wrap; }
+.card { background: #1a1a2e; border-radius: 12px; padding: 16px 24px; text-align: center; min-width: 140px; }
+.card .val { font-size: 3em; font-weight: bold; }
+.card .lbl { font-size: 0.8em; color: #888; margin-top: 4px; }
+#v_dist { color: #00ff88; }
+#v_reps { color: #ff6b6b; }
+#v_status { color: #ffd93d; font-size: 1.2em; }
+.chart-wrap { background: #1a1a2e; border-radius: 12px; padding: 16px; }
+canvas { width: 100%; height: 260px; display: block; }
+.controls { display: flex; gap: 8px; justify-content: center; margin-top: 12px; }
+.btn { background: #2a2a4e; color: #e0e0e0; border: none; border-radius: 8px;
+       padding: 8px 16px; font-size: 0.9em; cursor: pointer; }
+.btn:hover { background: #3a3a5e; }
+.btn.active { background: #00d4ff; color: #0a0a1a; }
 </style>
 </head>
 <body>
 <h1>LAZER Gym Tracker</h1>
-<div id="dist">--</div>
-<div id="unit">mm</div>
-<div id="status">connecting...</div>
+<div class="cards">
+  <div class="card"><div class="val" id="v_dist">--</div><div class="lbl">mm</div></div>
+  <div class="card"><div class="val" id="v_reps">0</div><div class="lbl">reps</div></div>
+  <div class="card"><div class="val" id="v_status">...</div><div class="lbl">status</div></div>
+</div>
+<div class="chart-wrap">
+  <canvas id="chart"></canvas>
+</div>
+<div class="controls">
+  <button class="btn" onclick="resetReps()">Reset Reps</button>
+  <button class="btn" id="btnPause" onclick="togglePause()">Pause</button>
+</div>
 <script>
+const MAX_PTS = 200;
+const data = [];
+let reps = 0, paused = false;
+// Rep detection state
+let baseline = null, inRep = false;
+const REP_THRESH = 40; // mm movement to count as rep
+const STABLE_COUNT = 3; // readings to establish baseline
+
+const canvas = document.getElementById('chart');
+const ctx = canvas.getContext('2d');
+
+function resizeCanvas() {
+  canvas.width = canvas.clientWidth * devicePixelRatio;
+  canvas.height = canvas.clientHeight * devicePixelRatio;
+  ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+function drawChart() {
+  const W = canvas.clientWidth, H = canvas.clientHeight;
+  ctx.clearRect(0, 0, W, H);
+  if (data.length < 2) return;
+
+  let min = Infinity, max = -Infinity;
+  for (const v of data) { if (v < min) min = v; if (v > max) max = v; }
+  const pad = Math.max((max - min) * 0.1, 10);
+  min -= pad; max += pad;
+
+  // Grid lines
+  ctx.strokeStyle = '#2a2a4e';
+  ctx.lineWidth = 1;
+  for (let i = 0; i <= 4; i++) {
+    const y = H * i / 4;
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+    ctx.fillStyle = '#555';
+    ctx.font = '11px sans-serif';
+    ctx.fillText(Math.round(max - (max - min) * i / 4) + '', 4, y + 13);
+  }
+
+  // Threshold lines (if baseline set)
+  if (baseline !== null) {
+    ctx.strokeStyle = '#ff6b6b33';
+    ctx.setLineDash([4, 4]);
+    const yUp = H - (baseline + REP_THRESH - min) / (max - min) * H;
+    const yDn = H - (baseline - REP_THRESH - min) / (max - min) * H;
+    ctx.beginPath(); ctx.moveTo(0, yUp); ctx.lineTo(W, yUp); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0, yDn); ctx.lineTo(W, yDn); ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  // Data line
+  ctx.strokeStyle = '#00ff88';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  for (let i = 0; i < data.length; i++) {
+    const x = W * i / (MAX_PTS - 1);
+    const y = H - (data[i] - min) / (max - min) * H;
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+}
+
+function detectRep(dist) {
+  // Establish baseline from first stable readings
+  if (baseline === null) {
+    if (data.length >= STABLE_COUNT) {
+      baseline = data.slice(-STABLE_COUNT).reduce((a, b) => a + b, 0) / STABLE_COUNT;
+    }
+    return;
+  }
+  const delta = dist - baseline;
+  if (!inRep && Math.abs(delta) > REP_THRESH) {
+    inRep = true;
+  } else if (inRep && Math.abs(delta) < REP_THRESH / 2) {
+    inRep = false;
+    reps++;
+    document.getElementById('v_reps').textContent = reps;
+    // Update baseline with slow drift
+    baseline = baseline * 0.9 + dist * 0.1;
+  }
+}
+
 async function poll() {
+  if (paused) return;
   try {
     const r = await fetch('/distance');
     const d = await r.json();
-    document.getElementById('dist').textContent = d.distance_mm;
-    document.getElementById('status').textContent = 'live';
+    const dist = d.distance_mm;
+    document.getElementById('v_dist').textContent = dist;
+    document.getElementById('v_status').textContent = 'LIVE';
+    data.push(dist);
+    if (data.length > MAX_PTS) data.shift();
+    detectRep(dist);
+    drawChart();
   } catch(e) {
-    document.getElementById('status').textContent = 'offline';
+    document.getElementById('v_status').textContent = 'OFF';
   }
 }
-setInterval(poll, 500);
+
+function resetReps() {
+  reps = 0; baseline = null; inRep = false;
+  document.getElementById('v_reps').textContent = '0';
+}
+function togglePause() {
+  paused = !paused;
+  document.getElementById('btnPause').textContent = paused ? 'Resume' : 'Pause';
+  document.getElementById('btnPause').classList.toggle('active', paused);
+}
+
+setInterval(poll, 300);
 poll();
 </script>
 </body>
@@ -394,7 +555,7 @@ void loop() {
     errorCount = 0;
   }
 
-  uint16_t dist = readDistance();
+  uint16_t dist = filteredDistance();
   if (dist == 0xFFFF) {
     errorCount++;
     Serial.print("Error count: ");
