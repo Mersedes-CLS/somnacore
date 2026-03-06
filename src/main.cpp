@@ -220,9 +220,9 @@ uint16_t readDistance() {
   return dist;
 }
 
-// --- Median filter (5 samples, kills spikes) ---
+// --- Median filter (3 samples, kills spikes) ---
 
-#define FILTER_SIZE 5
+#define FILTER_SIZE 3
 #define DIST_MIN 30
 #define DIST_MAX 2000
 
@@ -230,17 +230,12 @@ uint16_t filterBuf[FILTER_SIZE];
 uint8_t filterIdx = 0;
 bool filterFull = false;
 
-uint16_t medianOfFive(uint16_t a[]) {
-  uint16_t tmp[FILTER_SIZE];
-  memcpy(tmp, a, sizeof(tmp));
-  // Simple insertion sort
-  for (int i = 1; i < FILTER_SIZE; i++) {
-    uint16_t key = tmp[i];
-    int j = i - 1;
-    while (j >= 0 && tmp[j] > key) { tmp[j + 1] = tmp[j]; j--; }
-    tmp[j + 1] = key;
-  }
-  return tmp[FILTER_SIZE / 2];
+uint16_t medianOfThree(uint16_t a[]) {
+  uint16_t x = a[0], y = a[1], z = a[2];
+  if (x > y) { uint16_t t = x; x = y; y = t; }
+  if (y > z) { uint16_t t = y; y = z; z = t; }
+  if (x > y) { uint16_t t = x; x = y; y = t; }
+  return y;
 }
 
 uint16_t filteredDistance() {
@@ -249,7 +244,7 @@ uint16_t filteredDistance() {
 
   // Clamp out-of-range to last good value
   if (raw < DIST_MIN || raw > DIST_MAX) {
-    if (filterFull) return medianOfFive(filterBuf);
+    if (filterFull) return medianOfThree(filterBuf);
     return 0xFFFF;
   }
 
@@ -258,7 +253,7 @@ uint16_t filteredDistance() {
   if (filterIdx == 0) filterFull = true;
 
   if (!filterFull) return raw;
-  return medianOfFive(filterBuf);
+  return medianOfThree(filterBuf);
 }
 
 // --- Full sensor reset (XSHUT cycle + re-init) ---
