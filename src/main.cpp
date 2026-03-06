@@ -11,8 +11,8 @@
 #define XSHUT_PIN 16
 
 // WiFi credentials — replace with your network
-const char* WIFI_SSID = "TP-Link_1018";
-const char* WIFI_PASS = "46657763";
+const char* WIFI_SSID = "profit_dev";
+const char* WIFI_PASS = "UnzgmBlz7EwAU2aH5qVM";
 
 WebServer server(80);
 volatile uint16_t lastDistance = 0;
