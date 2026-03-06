@@ -571,5 +571,5 @@ void loop() {
     Serial.println(" mm");
   }
 
-  delay(250);
+  delay(50);
 }
