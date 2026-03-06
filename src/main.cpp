@@ -281,142 +281,328 @@ bool resetSensor() {
 
 const char INDEX_HTML[] PROGMEM = R"rawliteral(
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>LAZER Gym Tracker</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SmartStack</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: #0a0a1a; color: #e0e0e0; font-family: -apple-system, sans-serif;
-       padding: 20px; min-height: 100vh; }
-h1 { color: #00d4ff; text-align: center; font-size: 1.4em; margin-bottom: 16px; }
-.cards { display: flex; gap: 12px; margin-bottom: 16px; justify-content: center; flex-wrap: wrap; }
-.card { background: #1a1a2e; border-radius: 12px; padding: 16px 24px; text-align: center; min-width: 140px; }
-.card .val { font-size: 3em; font-weight: bold; }
-.card .lbl { font-size: 0.8em; color: #888; margin-top: 4px; }
-#v_dist { color: #00ff88; }
-#v_reps { color: #ff6b6b; }
-#v_status { color: #ffd93d; font-size: 1.2em; }
-.chart-wrap { background: #1a1a2e; border-radius: 12px; padding: 16px; }
-canvas { width: 100%; height: 260px; display: block; }
-.controls { display: flex; gap: 8px; justify-content: center; margin-top: 12px; }
-.btn { background: #2a2a4e; color: #e0e0e0; border: none; border-radius: 8px;
-       padding: 8px 16px; font-size: 0.9em; cursor: pointer; }
-.btn:hover { background: #3a3a5e; }
-.btn.active { background: #00d4ff; color: #0a0a1a; }
+:root {
+  --bg: #0B0F14;
+  --card: #141922;
+  --card-hover: #1B2130;
+  --purple: #8B5CF6;
+  --purple-glow: #A78BFA;
+  --purple-deep: #6D28D9;
+  --cyan: #22D3EE;
+  --text: #E5E7EB;
+  --text2: #9CA3AF;
+  --success: #22C55E;
+  --warn: #F59E0B;
+  --err: #EF4444;
+  --radius: 16px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { height: 100%; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', -apple-system, system-ui, sans-serif;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 20px env(safe-area-inset-bottom, 20px);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* --- Layout shell --- */
+.shell {
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* --- Header --- */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 4px;
+}
+.brand {
+  font-size: 0.85em;
+  font-weight: 600;
+  color: var(--text2);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.controls {
+  display: flex;
+  gap: 6px;
+}
+.btn {
+  background: var(--card);
+  color: var(--text2);
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-family: inherit;
+  font-size: 0.78em;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.btn:hover { background: var(--card-hover); }
+.btn.active {
+  background: var(--purple-deep);
+  color: #fff;
+  border-color: var(--purple);
+}
+
+/* --- Hero: REPS --- */
+.hero {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 40px 24px 36px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -1px; left: -1px; right: -1px; bottom: -1px;
+  border-radius: var(--radius);
+  border: 1px solid rgba(139,92,246,0.15);
+  pointer-events: none;
+}
+.hero-label {
+  font-size: 0.7em;
+  font-weight: 600;
+  color: var(--text2);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.hero-value {
+  font-size: 7em;
+  font-weight: 900;
+  line-height: 1;
+  color: #fff;
+  text-shadow: 0 0 40px rgba(139,92,246,0.3), 0 0 80px rgba(139,92,246,0.1);
+}
+.hero-sub {
+  font-size: 0.8em;
+  color: var(--text2);
+  margin-top: 12px;
+  font-weight: 500;
+}
+.hero-sub span { color: var(--purple-glow); font-weight: 600; }
+
+/* --- ROM bar --- */
+.rom-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+}
+.rom-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 14px;
+}
+.rom-label {
+  font-size: 0.7em;
+  font-weight: 600;
+  color: var(--text2);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.rom-value {
+  font-size: 1.1em;
+  font-weight: 700;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+.rom-value .unit { font-weight: 400; color: var(--text2); font-size: 0.8em; margin-left: 2px; }
+.rom-track {
+  width: 100%;
+  height: 6px;
+  background: var(--card-hover);
+  border-radius: 3px;
+  overflow: hidden;
+  position: relative;
+}
+.rom-fill {
+  height: 100%;
+  border-radius: 3px;
+  background: linear-gradient(90deg, var(--purple-deep), var(--purple));
+  box-shadow: 0 0 12px rgba(139,92,246,0.4);
+  transition: width 0.15s ease-out;
+  width: 0%;
+}
+
+/* --- Bottom row: weight + state --- */
+.info-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.info-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+}
+.info-label {
+  font-size: 0.65em;
+  font-weight: 600;
+  color: var(--text2);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.info-value {
+  font-size: 1.6em;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.info-value .unit { font-weight: 400; color: var(--text2); font-size: 0.55em; margin-left: 3px; }
+#v_weight { color: var(--text); }
+
+/* State chip */
+#v_state {
+  display: inline-block;
+  font-size: 0.78em;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  padding: 5px 14px;
+  border-radius: 20px;
+  text-transform: uppercase;
+}
+.state-ready { background: rgba(139,92,246,0.12); color: var(--purple-glow); }
+.state-set { background: rgba(34,197,94,0.12); color: var(--success); }
+.state-rest { background: rgba(245,158,11,0.12); color: var(--warn); }
+.state-off { background: rgba(239,68,68,0.12); color: var(--err); }
+
+/* --- Responsive: desktop wider --- */
+@media (min-width: 640px) {
+  .shell { max-width: 520px; gap: 20px; }
+  body { padding: 40px 24px; }
+  .hero { padding: 52px 32px 44px; }
+  .hero-value { font-size: 9em; }
+}
+
+/* --- Small phones --- */
+@media (max-width: 380px) {
+  .hero-value { font-size: 5.5em; }
+  .hero { padding: 32px 16px 28px; }
+  .info-value { font-size: 1.3em; }
+}
 </style>
 </head>
 <body>
-<h1>LAZER Gym Tracker</h1>
-<div class="cards">
-  <div class="card"><div class="val" id="v_dist">--</div><div class="lbl">mm</div></div>
-  <div class="card"><div class="val" id="v_reps">0</div><div class="lbl">reps</div></div>
-  <div class="card"><div class="val" id="v_status">...</div><div class="lbl">status</div></div>
+<div class="shell">
+  <!-- Header -->
+  <div class="header">
+    <div class="brand">SmartStack</div>
+    <div class="controls">
+      <button class="btn" onclick="resetAll()">Reset</button>
+      <button class="btn" id="btnPause" onclick="togglePause()">Pause</button>
+    </div>
+  </div>
+
+  <!-- REPS hero -->
+  <div class="hero">
+    <div class="hero-label">Reps</div>
+    <div class="hero-value" id="v_reps">0</div>
+    <div class="hero-sub">Set <span id="v_setnum">1</span></div>
+  </div>
+
+  <!-- ROM indicator -->
+  <div class="rom-card">
+    <div class="rom-head">
+      <div class="rom-label">Range of Motion</div>
+      <div class="rom-value" id="v_rom">--<span class="unit">mm</span></div>
+    </div>
+    <div class="rom-track"><div class="rom-fill" id="romFill"></div></div>
+  </div>
+
+  <!-- Weight + State -->
+  <div class="info-row">
+    <div class="info-card">
+      <div class="info-label">Weight</div>
+      <div class="info-value" id="v_weight">--<span class="unit">kg</span></div>
+    </div>
+    <div class="info-card">
+      <div class="info-label">Status</div>
+      <div><span id="v_state" class="state-ready">READY</span></div>
+    </div>
+  </div>
 </div>
-<div class="chart-wrap">
-  <canvas id="chart"></canvas>
-</div>
-<div class="controls">
-  <button class="btn" onclick="resetReps()">Reset Reps</button>
-  <button class="btn" id="btnPause" onclick="togglePause()">Pause</button>
-</div>
+
 <script>
 const MAX_PTS = 200;
 const data = [];
 let reps = 0, paused = false;
-// Rep detection state
+// Rep detection — percentage thresholds
 let baseline = null, inRep = false, repStartTime = 0, lastT = 0;
-const REP_ENTER = 40;  // mm to enter rep
-const REP_EXIT = 25;   // mm to exit rep (symmetric, less double-trigger)
-const REP_MIN_MS = 300; // minimum rep duration to count
-const STABLE_COUNT = 3; // readings to establish baseline
+const REP_ENTER_PCT = 0.30;
+const REP_EXIT_PCT = 0.10;
+const REP_MIN_MS = 300;
+const STABLE_COUNT = 3;
+// Set tracking
+let sets = 0, setReps = 0, lastRepTime = 0;
+let setHistory = [];
+const SET_TIMEOUT = 30000;
+// ROM tracking
+let romMin = Infinity, romMax = -Infinity;
 
-const canvas = document.getElementById('chart');
-const ctx = canvas.getContext('2d');
-
-function resizeCanvas() {
-  canvas.width = canvas.clientWidth * devicePixelRatio;
-  canvas.height = canvas.clientHeight * devicePixelRatio;
-  ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+function setState(s) {
+  const el = document.getElementById('v_state');
+  el.textContent = s;
+  el.className = s === 'IN SET' ? 'state-set' : s === 'REST' ? 'state-rest' : s === 'OFF' ? 'state-off' : 'state-ready';
 }
-resizeCanvas();
-window.addEventListener('resize', resizeCanvas);
 
-function drawChart() {
-  const W = canvas.clientWidth, H = canvas.clientHeight;
-  ctx.clearRect(0, 0, W, H);
-  if (data.length < 2) return;
-
-  let min = Infinity, max = -Infinity;
-  for (const v of data) { if (v < min) min = v; if (v > max) max = v; }
-  const pad = Math.max((max - min) * 0.1, 10);
-  min -= pad; max += pad;
-
-  // Grid lines
-  ctx.strokeStyle = '#2a2a4e';
-  ctx.lineWidth = 1;
-  for (let i = 0; i <= 4; i++) {
-    const y = H * i / 4;
-    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
-    ctx.fillStyle = '#555';
-    ctx.font = '11px sans-serif';
-    ctx.fillText(Math.round(max - (max - min) * i / 4) + '', 4, y + 13);
-  }
-
-  // Threshold lines (if baseline set)
-  if (baseline !== null) {
-    ctx.strokeStyle = '#ff6b6b33';
-    ctx.setLineDash([4, 4]);
-    const yUp = H - (baseline + REP_THRESH - min) / (max - min) * H;
-    const yDn = H - (baseline - REP_THRESH - min) / (max - min) * H;
-    ctx.beginPath(); ctx.moveTo(0, yUp); ctx.lineTo(W, yUp); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(0, yDn); ctx.lineTo(W, yDn); ctx.stroke();
-    ctx.setLineDash([]);
-  }
-
-  // Data line
-  ctx.strokeStyle = '#00ff88';
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  for (let i = 0; i < data.length; i++) {
-    const x = W * i / (MAX_PTS - 1);
-    const y = H - (data[i] - min) / (max - min) * H;
-    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
-  }
-  ctx.stroke();
-
-  // Current distance overlay on chart
-  if (data.length > 0) {
-    const cur = data[data.length - 1];
-    ctx.font = 'bold 36px sans-serif';
-    ctx.fillStyle = '#00ff88cc';
-    ctx.textAlign = 'right';
-    ctx.fillText(cur + ' mm', W - 12, 40);
-    ctx.textAlign = 'left';
-  }
+function updateROM(dist) {
+  if (!inRep) { romMin = Infinity; romMax = -Infinity; return; }
+  if (dist < romMin) romMin = dist;
+  if (dist > romMax) romMax = dist;
+  const range = romMax - romMin;
+  document.getElementById('v_rom').innerHTML = range + '<span class="unit">mm</span>';
+  // Fill bar: percentage of baseline as ROM
+  const pct = baseline ? Math.min(range / baseline * 100 * 2, 100) : 0;
+  document.getElementById('romFill').style.width = pct + '%';
 }
 
 function detectRep(dist) {
-  // Establish baseline from first stable readings
   if (baseline === null) {
     if (data.length >= STABLE_COUNT) {
       baseline = data.slice(-STABLE_COUNT).reduce((a, b) => a + b, 0) / STABLE_COUNT;
     }
     return;
   }
-  const delta = Math.abs(dist - baseline);
-  if (!inRep && delta > REP_ENTER) {
+  const delta = baseline - dist;
+  const enterThresh = baseline * REP_ENTER_PCT;
+  const exitThresh = baseline * REP_EXIT_PCT;
+  if (!inRep && delta > enterThresh) {
     inRep = true;
     repStartTime = Date.now();
-  } else if (inRep && delta < REP_EXIT) {
+    setState('IN SET');
+  } else if (inRep && delta < exitThresh) {
     if (Date.now() - repStartTime >= REP_MIN_MS) {
       reps++;
-      document.getElementById('v_reps').textContent = reps;
+      setReps++;
+      lastRepTime = Date.now();
+      document.getElementById('v_reps').textContent = setReps;
     }
     inRep = false;
   }
-  // Continuous baseline drift — slow update even outside reps
+  updateROM(dist);
   if (!inRep) {
     baseline = baseline * 0.98 + dist * 0.02;
   }
@@ -430,21 +616,38 @@ async function poll() {
     const dist = d.distance_mm;
     const stale = (lastT > 0 && d.t === lastT);
     lastT = d.t;
-    if (stale) return; // skip duplicate readings
-    document.getElementById('v_dist').textContent = dist;
-    document.getElementById('v_status').textContent = 'LIVE';
+    if (stale) return;
     data.push(dist);
     if (data.length > MAX_PTS) data.shift();
     detectRep(dist);
-    drawChart();
+    // Auto-close set after timeout
+    if (setReps > 0 && lastRepTime > 0 && Date.now() - lastRepTime > SET_TIMEOUT) {
+      sets++;
+      setHistory.push({reps: setReps});
+      setReps = 0;
+      lastRepTime = 0;
+      document.getElementById('v_reps').textContent = '0';
+      document.getElementById('v_setnum').textContent = sets + 1;
+      setState('REST');
+    }
+    // State transitions
+    if (setReps === 0 && !inRep && sets === 0) setState('READY');
+    else if (setReps > 0 && !inRep) setState('IN SET');
   } catch(e) {
-    document.getElementById('v_status').textContent = 'OFF';
+    setState('OFF');
   }
 }
 
-function resetReps() {
+function resetAll() {
   reps = 0; baseline = null; inRep = false;
+  sets = 0; setReps = 0; lastRepTime = 0; setHistory = [];
+  romMin = Infinity; romMax = -Infinity;
   document.getElementById('v_reps').textContent = '0';
+  document.getElementById('v_setnum').textContent = '1';
+  document.getElementById('v_rom').innerHTML = '--<span class="unit">mm</span>';
+  document.getElementById('romFill').style.width = '0%';
+  document.getElementById('v_weight').innerHTML = '--<span class="unit">kg</span>';
+  setState('READY');
 }
 function togglePause() {
   paused = !paused;
