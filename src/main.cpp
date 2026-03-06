@@ -326,8 +326,10 @@ const MAX_PTS = 200;
 const data = [];
 let reps = 0, paused = false;
 // Rep detection state
-let baseline = null, inRep = false;
-const REP_THRESH = 40; // mm movement to count as rep
+let baseline = null, inRep = false, repStartTime = 0, lastT = 0;
+const REP_ENTER = 40;  // mm to enter rep
+const REP_EXIT = 25;   // mm to exit rep (symmetric, less double-trigger)
+const REP_MIN_MS = 300; // minimum rep duration to count
 const STABLE_COUNT = 3; // readings to establish baseline
 
 const canvas = document.getElementById('chart');
@@ -383,6 +385,16 @@ function drawChart() {
     i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
   }
   ctx.stroke();
+
+  // Current distance overlay on chart
+  if (data.length > 0) {
+    const cur = data[data.length - 1];
+    ctx.font = 'bold 36px sans-serif';
+    ctx.fillStyle = '#00ff88cc';
+    ctx.textAlign = 'right';
+    ctx.fillText(cur + ' mm', W - 12, 40);
+    ctx.textAlign = 'left';
+  }
 }
 
 function detectRep(dist) {
@@ -393,15 +405,20 @@ function detectRep(dist) {
     }
     return;
   }
-  const delta = dist - baseline;
-  if (!inRep && Math.abs(delta) > REP_THRESH) {
+  const delta = Math.abs(dist - baseline);
+  if (!inRep && delta > REP_ENTER) {
     inRep = true;
-  } else if (inRep && Math.abs(delta) < REP_THRESH / 2) {
+    repStartTime = Date.now();
+  } else if (inRep && delta < REP_EXIT) {
+    if (Date.now() - repStartTime >= REP_MIN_MS) {
+      reps++;
+      document.getElementById('v_reps').textContent = reps;
+    }
     inRep = false;
-    reps++;
-    document.getElementById('v_reps').textContent = reps;
-    // Update baseline with slow drift
-    baseline = baseline * 0.9 + dist * 0.1;
+  }
+  // Continuous baseline drift — slow update even outside reps
+  if (!inRep) {
+    baseline = baseline * 0.98 + dist * 0.02;
   }
 }
 
@@ -411,6 +428,9 @@ async function poll() {
     const r = await fetch('/distance');
     const d = await r.json();
     const dist = d.distance_mm;
+    const stale = (lastT > 0 && d.t === lastT);
+    lastT = d.t;
+    if (stale) return; // skip duplicate readings
     document.getElementById('v_dist').textContent = dist;
     document.getElementById('v_status').textContent = 'LIVE';
     data.push(dist);
@@ -432,7 +452,7 @@ function togglePause() {
   document.getElementById('btnPause').classList.toggle('active', paused);
 }
 
-setInterval(poll, 300);
+setInterval(poll, 150);
 poll();
 </script>
 </body>
