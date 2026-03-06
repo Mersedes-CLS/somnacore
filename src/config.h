@@ -31,5 +31,15 @@ constexpr const char* WIFI_PASS = "UnzgmBlz7EwAU2aH5qVM";
 constexpr uint8_t  WIFI_MAX_ATTEMPTS  = 20;
 constexpr uint16_t WIFI_RETRY_MS      = 500;
 
+// --- Rep detection ---
+constexpr float    REP_ENTER_PCT      = 0.30f;
+constexpr float    REP_EXIT_PCT       = 0.10f;
+constexpr uint16_t REP_MIN_MS         = 300;
+constexpr uint8_t  REP_STABLE_COUNT   = 3;
+constexpr float    BASELINE_DECAY     = 0.98f;
+constexpr float    BASELINE_ADAPT     = 0.02f;
+constexpr uint32_t SET_TIMEOUT_MS     = 30000;
+constexpr uint8_t  MAX_SETS           = 32;
+
 // --- Web server ---
 constexpr uint16_t HTTP_PORT = 80;

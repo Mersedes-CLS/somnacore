@@ -3,11 +3,15 @@
 #include "hal/i2c_bus.h"
 #include "drivers/vl53l0x.h"
 #include "processing/filter.h"
+#include "processing/rep_detector.h"
+#include "app/session.h"
 #include "net/wifi_manager.h"
 #include "net/web_server.h"
 
 static VL53L0X sensor(ADDR_VL53L0X, PIN_XSHUT_TOP);
 static MedianFilter filter;
+static RepDetector repDetector;
+static Session session;
 static volatile uint16_t lastDistance = 0;
 static bool sensorOK = false;
 static int errorCount = 0;
@@ -46,7 +50,7 @@ void setup() {
     }
 
     net::wifiConnect();
-    net::webServerInit(&lastDistance);
+    net::webServerInit(&lastDistance, &session);
 }
 
 void loop() {
@@ -73,10 +77,30 @@ void loop() {
 
     errorCount = 0;
     lastDistance = dist;
+
     if (dist != 0) {
-        Serial.print("Distance: ");
-        Serial.print(dist);
-        Serial.println(" mm");
+        if (repDetector.update(dist)) {
+            session.feedRep(repDetector.peakDelta());
+            Serial.print("[REP] #");
+            Serial.print(session.currentReps());
+            Serial.print(" ROM=");
+            Serial.print(repDetector.peakDelta());
+            Serial.println("mm");
+        }
+
+        uint8_t prevSets = session.setCount();
+        session.tick();
+        if (session.setCount() > prevSets) {
+            const SetRecord* h = session.history();
+            const SetRecord& last = h[prevSets];
+            Serial.print("[SET] #");
+            Serial.print(session.setCount());
+            Serial.print(" complete: ");
+            Serial.print(last.reps);
+            Serial.print(" reps, ROM=");
+            Serial.print(last.romMm);
+            Serial.println("mm");
+        }
     }
 
     delay(LOOP_DELAY_MS);

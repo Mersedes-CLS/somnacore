@@ -1,5 +1,6 @@
 #include "web_server.h"
 #include "../config.h"
+#include "../app/session.h"
 #include <Arduino.h>
 #include <WebServer.h>
 #include <LittleFS.h>
@@ -8,6 +9,7 @@ namespace net {
 
 static WebServer server(HTTP_PORT);
 static volatile uint16_t* pDistance = nullptr;
+static Session* pSession = nullptr;
 
 static void handleRoot() {
     File file = LittleFS.open("/index.html", "r");
@@ -25,8 +27,17 @@ static void handleDistance() {
     server.send(200, "application/json", json);
 }
 
-void webServerInit(volatile uint16_t* distancePtr) {
+static void handleStatus() {
+    if (!pSession) {
+        server.send(500, "application/json", "{\"error\":\"no session\"}");
+        return;
+    }
+    server.send(200, "application/json", pSession->statusJson());
+}
+
+void webServerInit(volatile uint16_t* distancePtr, Session* session) {
     pDistance = distancePtr;
+    pSession = session;
 
     if (!LittleFS.begin()) {
         Serial.println("LittleFS mount failed!");
@@ -34,6 +45,7 @@ void webServerInit(volatile uint16_t* distancePtr) {
 
     server.on("/", handleRoot);
     server.on("/distance", handleDistance);
+    server.on("/status", handleStatus);
     server.begin();
     Serial.println("Web server started");
 }
