@@ -444,7 +444,7 @@ void handleRoot() {
 }
 
 void handleDistance() {
-  String json = "{\"distance_mm\":" + String(lastDistance) + "}";
+  String json = "{\"distance_mm\":" + String(lastDistance) + ",\"t\":" + String(millis()) + "}";
   server.send(200, "application/json", json);
 }
 
