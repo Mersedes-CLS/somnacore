@@ -50,7 +50,7 @@ uint8_t readReg(uint8_t reg) {
   Wire.endTransmission(false);
   Wire.requestFrom(ADDR, (uint8_t)1);
   uint8_t val = Wire.read();
-  delay(2);
+  delayMicroseconds(500);
   return val;
 }
 
@@ -59,7 +59,7 @@ void writeReg(uint8_t reg, uint8_t val) {
   Wire.write(reg);
   Wire.write(val);
   Wire.endTransmission(true);
-  delay(2);
+  delayMicroseconds(500);
 }
 
 uint16_t readReg16(uint8_t reg) {
@@ -69,7 +69,7 @@ uint16_t readReg16(uint8_t reg) {
   Wire.requestFrom(ADDR, (uint8_t)2);
   uint16_t val = (uint16_t)Wire.read() << 8;
   val |= Wire.read();
-  delay(2);
+  delayMicroseconds(500);
   return val;
 }
 
@@ -79,7 +79,7 @@ void writeReg16(uint8_t reg, uint16_t val) {
   Wire.write((val >> 8) & 0xFF);
   Wire.write(val & 0xFF);
   Wire.endTransmission(true);
-  delay(2);
+  delayMicroseconds(500);
 }
 
 // --- Initialization ---
