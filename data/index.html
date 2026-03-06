@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SomnaCore</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0B0F14;
+  --card: #141922;
+  --card-hover: #1B2130;
+  --purple: #8B5CF6;
+  --purple-glow: #A78BFA;
+  --purple-deep: #6D28D9;
+  --cyan: #22D3EE;
+  --text: #E5E7EB;
+  --text2: #9CA3AF;
+  --success: #22C55E;
+  --warn: #F59E0B;
+  --err: #EF4444;
+  --radius: 16px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { height: 100%; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', -apple-system, system-ui, sans-serif;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 20px env(safe-area-inset-bottom, 20px);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* --- Layout shell --- */
+.shell {
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* --- Header --- */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 4px;
+}
+.brand {
+  font-size: 0.85em;
+  font-weight: 600;
+  color: var(--text2);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.controls {
+  display: flex;
+  gap: 6px;
+}
+.btn {
+  background: var(--card);
+  color: var(--text2);
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-family: inherit;
+  font-size: 0.78em;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.btn:hover { background: var(--card-hover); }
+.btn.active {
+  background: var(--purple-deep);
+  color: #fff;
+  border-color: var(--purple);
+}
+
+/* --- Hero: REPS --- */
+.hero {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 40px 24px 36px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -1px; left: -1px; right: -1px; bottom: -1px;
+  border-radius: var(--radius);
+  border: 1px solid rgba(139,92,246,0.15);
+  pointer-events: none;
+}
+.hero-label {
+  font-size: 0.7em;
+  font-weight: 600;
+  color: var(--text2);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.hero-value {
+  font-size: 7em;
+  font-weight: 900;
+  line-height: 1;
+  color: #fff;
+  text-shadow: 0 0 40px rgba(139,92,246,0.3), 0 0 80px rgba(139,92,246,0.1);
+}
+.hero-sub {
+  font-size: 0.8em;
+  color: var(--text2);
+  margin-top: 12px;
+  font-weight: 500;
+}
+.hero-sub span { color: var(--purple-glow); font-weight: 600; }
+
+/* --- Position indicator --- */
+.rom-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+}
+.rom-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 14px;
+}
+.rom-label {
+  font-size: 0.7em;
+  font-weight: 600;
+  color: var(--text2);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.rom-value {
+  font-size: 1.1em;
+  font-weight: 700;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+.rom-value .arrow { font-size: 0.9em; margin-right: 4px; }
+.rom-value .unit { font-weight: 400; color: var(--text2); font-size: 0.8em; margin-left: 2px; }
+.rom-track {
+  width: 100%;
+  height: 10px;
+  background: var(--card-hover);
+  border-radius: 5px;
+  overflow: hidden;
+  position: relative;
+}
+.rom-fill {
+  height: 100%;
+  border-radius: 5px;
+  background: rgba(139,92,246,0.3);
+  box-shadow: none;
+  transition: width 0.3s ease-out, background 0.5s ease, box-shadow 0.5s ease;
+  width: 0%;
+}
+
+/* --- Bottom row: weight + state --- */
+.info-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.info-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+}
+.info-label {
+  font-size: 0.65em;
+  font-weight: 600;
+  color: var(--text2);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.info-value {
+  font-size: 1.6em;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.info-value .unit { font-weight: 400; color: var(--text2); font-size: 0.55em; margin-left: 3px; }
+#v_weight { color: var(--text); }
+
+/* State chip */
+#v_state {
+  display: inline-block;
+  font-size: 0.78em;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  padding: 5px 14px;
+  border-radius: 20px;
+  text-transform: uppercase;
+}
+.state-ready { background: rgba(139,92,246,0.12); color: var(--purple-glow); }
+.state-set { background: rgba(34,197,94,0.12); color: var(--success); }
+.state-rest { background: rgba(245,158,11,0.12); color: var(--warn); }
+.state-off { background: rgba(239,68,68,0.12); color: var(--err); }
+
+/* --- Responsive: desktop wider --- */
+@media (min-width: 640px) {
+  .shell { max-width: 520px; gap: 20px; }
+  body { padding: 40px 24px; }
+  .hero { padding: 52px 32px 44px; }
+  .hero-value { font-size: 9em; }
+}
+
+/* --- Small phones --- */
+@media (max-width: 380px) {
+  .hero-value { font-size: 5.5em; }
+  .hero { padding: 32px 16px 28px; }
+  .info-value { font-size: 1.3em; }
+}
+</style>
+</head>
+<body>
+<div class="shell">
+  <!-- Header -->
+  <div class="header">
+    <div class="brand">SomnaCore</div>
+    <div class="controls">
+      <button class="btn" onclick="resetAll()">Reset</button>
+      <button class="btn" id="btnPause" onclick="togglePause()">Pause</button>
+    </div>
+  </div>
+
+  <!-- REPS hero -->
+  <div class="hero">
+    <div class="hero-label">Reps</div>
+    <div class="hero-value" id="v_reps">0</div>
+    <div class="hero-sub">Set <span id="v_setnum">1</span></div>
+  </div>
+
+  <!-- ROM indicator -->
+  <div class="rom-card">
+    <div class="rom-head">
+      <div class="rom-label">Position</div>
+      <div class="rom-value" id="v_rom"><span class="arrow">&middot;</span>0<span class="unit">mm</span></div>
+    </div>
+    <div class="rom-track"><div class="rom-fill" id="romFill"></div></div>
+  </div>
+
+  <!-- Weight + State -->
+  <div class="info-row">
+    <div class="info-card">
+      <div class="info-label">Weight</div>
+      <div class="info-value" id="v_weight">--<span class="unit">kg</span></div>
+    </div>
+    <div class="info-card">
+      <div class="info-label">Status</div>
+      <div><span id="v_state" class="state-ready">READY</span></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const MAX_PTS = 200;
+const data = [];
+let reps = 0, paused = false;
+// Rep detection — percentage thresholds
+let baseline = null, inRep = false, repStartTime = 0, lastT = 0;
+const REP_ENTER_PCT = 0.30;
+const REP_EXIT_PCT = 0.10;
+const REP_MIN_MS = 300;
+const STABLE_COUNT = 3;
+// Set tracking
+let sets = 0, setReps = 0, lastRepTime = 0;
+let setHistory = [];
+const SET_TIMEOUT = 30000;
+// Position tracking
+let prevDist = null, smoothDelta = 0, moveDir = 'idle';
+
+function setState(s) {
+  const el = document.getElementById('v_state');
+  el.textContent = s;
+  el.className = s === 'IN SET' ? 'state-set' : s === 'REST' ? 'state-rest' : s === 'OFF' ? 'state-off' : 'state-ready';
+}
+
+function updatePosition(dist) {
+  if (baseline === null) { prevDist = dist; return; }
+  const delta = baseline - dist;
+  smoothDelta = smoothDelta * 0.7 + delta * 0.3;
+  // Direction
+  if (prevDist !== null) {
+    const diff = prevDist - dist;
+    if (diff > 5) moveDir = 'down';
+    else if (diff < -5) moveDir = 'up';
+    else moveDir = 'idle';
+  }
+  prevDist = dist;
+  // Arrow + color
+  let arrow = '&middot;', bg, shadow;
+  if (moveDir === 'down') {
+    arrow = '&darr;';
+    bg = 'linear-gradient(90deg, #16a34a, #22c55e)';
+    shadow = '0 0 12px rgba(34,197,94,0.5)';
+  } else if (moveDir === 'up') {
+    arrow = '&uarr;';
+    bg = 'linear-gradient(90deg, #0891b2, #22d3ee)';
+    shadow = '0 0 12px rgba(34,211,238,0.5)';
+  } else {
+    bg = 'rgba(139,92,246,0.3)';
+    shadow = 'none';
+  }
+  const absDelta = Math.max(0, Math.round(smoothDelta));
+  document.getElementById('v_rom').innerHTML = '<span class="arrow">' + arrow + '</span>' + absDelta + '<span class="unit">mm</span>';
+  const fill = document.getElementById('romFill');
+  const pct = Math.min(Math.max(smoothDelta, 0) / baseline * 200, 100);
+  fill.style.width = pct + '%';
+  fill.style.background = bg;
+  fill.style.boxShadow = shadow;
+}
+
+function detectRep(dist) {
+  if (baseline === null) {
+    if (data.length >= STABLE_COUNT) {
+      baseline = data.slice(-STABLE_COUNT).reduce((a, b) => a + b, 0) / STABLE_COUNT;
+    }
+    return;
+  }
+  const delta = baseline - dist;
+  const enterThresh = baseline * REP_ENTER_PCT;
+  const exitThresh = baseline * REP_EXIT_PCT;
+  if (!inRep && delta > enterThresh) {
+    inRep = true;
+    repStartTime = Date.now();
+    setState('IN SET');
+  } else if (inRep && delta < exitThresh) {
+    if (Date.now() - repStartTime >= REP_MIN_MS) {
+      reps++;
+      setReps++;
+      lastRepTime = Date.now();
+      document.getElementById('v_reps').textContent = setReps;
+    }
+    inRep = false;
+  }
+  updatePosition(dist);
+  if (!inRep) {
+    baseline = baseline * 0.98 + dist * 0.02;
+  }
+}
+
+async function poll() {
+  if (paused) return;
+  try {
+    const r = await fetch('/distance');
+    const d = await r.json();
+    const dist = d.distance_mm;
+    const stale = (lastT > 0 && d.t === lastT);
+    lastT = d.t;
+    if (stale) return;
+    data.push(dist);
+    if (data.length > MAX_PTS) data.shift();
+    detectRep(dist);
+    // Auto-close set after timeout
+    if (setReps > 0 && lastRepTime > 0 && Date.now() - lastRepTime > SET_TIMEOUT) {
+      sets++;
+      setHistory.push({reps: setReps});
+      setReps = 0;
+      lastRepTime = 0;
+      document.getElementById('v_reps').textContent = '0';
+      document.getElementById('v_setnum').textContent = sets + 1;
+      setState('REST');
+    }
+    // State transitions
+    if (setReps === 0 && !inRep && sets === 0) setState('READY');
+    else if (setReps > 0 && !inRep) setState('IN SET');
+  } catch(e) {
+    setState('OFF');
+  }
+}
+
+function resetAll() {
+  reps = 0; baseline = null; inRep = false;
+  sets = 0; setReps = 0; lastRepTime = 0; setHistory = [];
+  prevDist = null; smoothDelta = 0; moveDir = 'idle';
+  document.getElementById('v_reps').textContent = '0';
+  document.getElementById('v_setnum').textContent = '1';
+  document.getElementById('v_rom').innerHTML = '<span class="arrow">&middot;</span>0<span class="unit">mm</span>';
+  const fill = document.getElementById('romFill');
+  fill.style.width = '0%';
+  fill.style.background = 'rgba(139,92,246,0.3)';
+  fill.style.boxShadow = 'none';
+  document.getElementById('v_weight').innerHTML = '--<span class="unit">kg</span>';
+  setState('READY');
+}
+function togglePause() {
+  paused = !paused;
+  document.getElementById('btnPause').textContent = paused ? 'Resume' : 'Pause';
+  document.getElementById('btnPause').classList.toggle('active', paused);
+}
+
+setInterval(poll, 150);
+poll();
+</script>
+</body>
+</html>
