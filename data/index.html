@@ -100,6 +100,39 @@ body {
 }
 .hero-sub span { color: var(--purple-glow); font-weight: 600; }
 
+/* --- Distance card --- */
+.dist-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 24px 24px 20px;
+  text-align: center;
+  border: 1px solid rgba(34,211,238,0.15);
+}
+.dist-label {
+  font-size: 0.7em;
+  font-weight: 600;
+  color: var(--text2);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.dist-value {
+  font-size: 4em;
+  font-weight: 900;
+  line-height: 1;
+  color: var(--cyan);
+  text-shadow: 0 0 30px rgba(34,211,238,0.35);
+  font-variant-numeric: tabular-nums;
+  transition: color 0.2s;
+}
+.dist-unit {
+  font-size: 0.35em;
+  font-weight: 500;
+  color: var(--text2);
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
 /* --- Position indicator --- */
 .rom-card {
   background: var(--card);
@@ -216,6 +249,12 @@ body {
     <div class="hero-sub">Set <span id="v_setnum">1</span></div>
   </div>
 
+  <!-- Distance hero -->
+  <div class="dist-card">
+    <div class="dist-label">Distance</div>
+    <div class="dist-value"><span id="v_dist">---</span><span class="dist-unit">mm</span></div>
+  </div>
+
   <!-- ROM indicator -->
   <div class="rom-card">
     <div class="rom-head">
@@ -292,8 +331,18 @@ async function poll() {
     document.getElementById('v_setnum').textContent = status.set || 1;
     setState(status.state);
 
+    // Raw distance display
+    const d = dist.distance_mm;
+    const distEl = document.getElementById('v_dist');
+    if (d > 0 && d < 8190) {
+      distEl.textContent = d;
+      distEl.parentElement.style.color = '';
+    } else {
+      distEl.textContent = '---';
+    }
+
     // Position bar from distance data
-    updatePosition(dist.distance_mm);
+    updatePosition(d);
   } catch(e) {
     setState('OFF');
   }
@@ -313,7 +362,7 @@ async function pollBaseline() {
   } catch(e) {}
 }
 
-setInterval(poll, 150);
+setInterval(poll, 100);
 setInterval(pollBaseline, 2000);
 poll();
 </script>

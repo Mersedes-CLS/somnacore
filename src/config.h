@@ -26,8 +26,8 @@ constexpr uint8_t  MAX_INIT_RETRIES   = 5;
 constexpr uint16_t LOOP_DELAY_MS      = 50;
 
 // --- WiFi ---
-constexpr const char* WIFI_SSID = "profit_dev";
-constexpr const char* WIFI_PASS = "UnzgmBlz7EwAU2aH5qVM";
+constexpr const char* WIFI_SSID = "Pepega";
+constexpr const char* WIFI_PASS = "1085620489";
 constexpr uint8_t  WIFI_MAX_ATTEMPTS  = 20;
 constexpr uint16_t WIFI_RETRY_MS      = 500;
 
