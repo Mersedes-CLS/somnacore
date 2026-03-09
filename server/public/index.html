@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>LAZER Tracker</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="tabs">
+    <button class="tab active" data-tab="today">Сегодня</button>
+    <button class="tab" data-tab="history">История</button>
+    <button class="tab" data-tab="stats">Статистика</button>
+  </div>
+
+  <div id="today" class="tab-content active">
+    <div class="summary" id="today-summary"></div>
+    <div id="today-sets"></div>
+  </div>
+
+  <div id="history" class="tab-content">
+    <div id="machine-list"></div>
+    <div id="machine-sets"></div>
+  </div>
+
+  <div id="stats" class="tab-content">
+    <div id="stats-total"></div>
+    <div id="stats-per-day"></div>
+    <div id="stats-per-machine"></div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

@@ -4,3 +4,6 @@ Lib/
 Scripts/
 server/node_modules/
 server/lazer.db
+server/lazer.db-shm
+server/lazer.db-wal
+server/.env
