@@ -7,24 +7,16 @@
 
 namespace net {
 
-static WiFiClientSecure secClient;
-static bool secInit = false;
-
-static void ensureClient() {
-    if (!secInit) {
-        secClient.setInsecure();
-        secInit = true;
-    }
-}
-
 void calibPushDistance(uint16_t distMm) {
     if (WiFi.status() != WL_CONNECTED) return;
-    ensureClient();
 
+    WiFiClientSecure client;
+    client.setInsecure();
     HTTPClient http;
     String url = String(BACKEND_BASE) + "/api/calib/live";
-    http.begin(secClient, url);
+    http.begin(client, url);
     http.addHeader("Content-Type", "application/json");
+    http.setTimeout(5000);
 
     String body = "{\"machine_id\":\"";
     body += MACHINE_ID;
@@ -33,25 +25,26 @@ void calibPushDistance(uint16_t distMm) {
     body += "}";
 
     int code = http.POST(body);
-    if (code <= 0) {
-        Serial.print("[CALIB] push dist failed: ");
-        Serial.println(http.errorToString(code));
-    }
+    Serial.printf("[CALIB] push dist=%d -> %d\n", distMm, code);
     http.end();
 }
 
 CalibCommand calibPollCommand() {
     CalibCommand result = { false, "", 0 };
     if (WiFi.status() != WL_CONNECTED) return result;
-    ensureClient();
 
+    WiFiClientSecure client;
+    client.setInsecure();
     HTTPClient http;
     String url = String(BACKEND_BASE) + "/api/calib/command?machine_id=" + MACHINE_ID;
-    http.begin(secClient, url);
+    http.begin(client, url);
+    http.setTimeout(5000);
 
     int code = http.GET();
+    Serial.printf("[CALIB] poll cmd -> %d\n", code);
     if (code == 200) {
         String payload = http.getString();
+        Serial.printf("[CALIB] cmd body: %s\n", payload.c_str());
         JsonDocument doc;
         if (deserializeJson(doc, payload) == DeserializationError::Ok) {
             if (!doc["command"].isNull()) {
@@ -67,12 +60,14 @@ CalibCommand calibPollCommand() {
 
 void calibPostResult(int position, int weightKg, int distMm, int dmin, int dmax, int jitter) {
     if (WiFi.status() != WL_CONNECTED) return;
-    ensureClient();
 
+    WiFiClientSecure client;
+    client.setInsecure();
     HTTPClient http;
     String url = String(BACKEND_BASE) + "/api/calib/result";
-    http.begin(secClient, url);
+    http.begin(client, url);
     http.addHeader("Content-Type", "application/json");
+    http.setTimeout(5000);
 
     String body = "{\"machine_id\":\"";
     body += MACHINE_ID;
@@ -91,23 +86,20 @@ void calibPostResult(int position, int weightKg, int distMm, int dmin, int dmax,
     body += "}";
 
     int code = http.POST(body);
-    if (code > 0) {
-        Serial.printf("[CALIB] result posted pos=%d → %d\n", position, code);
-    } else {
-        Serial.print("[CALIB] result post failed: ");
-        Serial.println(http.errorToString(code));
-    }
+    Serial.printf("[CALIB] result posted pos=%d -> %d\n", position, code);
     http.end();
 }
 
 int calibLoadTable(CalibPoint* table, int maxPoints) {
     for (int i = 0; i < maxPoints; i++) table[i].valid = false;
     if (WiFi.status() != WL_CONNECTED) return 0;
-    ensureClient();
 
+    WiFiClientSecure client;
+    client.setInsecure();
     HTTPClient http;
     String url = String(BACKEND_BASE) + "/api/calib/table?machine_id=" + MACHINE_ID;
-    http.begin(secClient, url);
+    http.begin(client, url);
+    http.setTimeout(5000);
 
     int code = http.GET();
     int loaded = 0;
@@ -128,8 +120,7 @@ int calibLoadTable(CalibPoint* table, int maxPoints) {
         }
         Serial.printf("[CALIB] loaded %d calibration points from server\n", loaded);
     } else {
-        Serial.print("[CALIB] load table failed: ");
-        Serial.println(code);
+        Serial.printf("[CALIB] load table failed: %d\n", code);
     }
     http.end();
     return loaded;

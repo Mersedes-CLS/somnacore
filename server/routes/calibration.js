@@ -49,13 +49,17 @@ router.post("/calib/command", async (req, res) => {
 router.get("/calib/command", async (req, res) => {
   const { machine_id } = req.query;
   if (!machine_id) return res.status(400).json({ error: "machine_id required" });
+  // Read first, then clear — RETURNING gives post-update values (NULL)
   const r = await pool.query(
-    `UPDATE calib_state SET pending_command = NULL, command_position = NULL
-     WHERE machine_id = $1 AND pending_command IS NOT NULL
-     RETURNING pending_command AS command, command_position AS position`,
+    `SELECT pending_command AS command, command_position AS position
+     FROM calib_state WHERE machine_id = $1 AND pending_command IS NOT NULL`,
     [machine_id]
   );
   if (r.rows.length === 0) return res.json({ command: null });
+  await pool.query(
+    `UPDATE calib_state SET pending_command = NULL, command_position = NULL WHERE machine_id = $1`,
+    [machine_id]
+  );
   res.json(r.rows[0]);
 });
 
