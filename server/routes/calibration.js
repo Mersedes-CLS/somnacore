@@ -28,7 +28,7 @@ router.get("/calib/live", async (req, res) => {
   if (r.rows.length === 0) return res.json({ distance_mm: null, stale: true });
   const row = r.rows[0];
   const age = Date.now() - new Date(row.distance_updated_at).getTime();
-  res.json({ distance_mm: row.live_distance_mm, age_ms: age, stale: age > 3000 });
+  res.json({ distance_mm: row.live_distance_mm, age_ms: age, stale: age > 10000 });
 });
 
 // Mini App sends command to ESP32

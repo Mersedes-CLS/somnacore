@@ -330,7 +330,7 @@ function renderWizardStep() {
   // Start live distance polling
   stopCalibTimers();
   pollLiveDistance();
-  calibLiveTimer = setInterval(pollLiveDistance, 500);
+  calibLiveTimer = setInterval(pollLiveDistance, 2000);
 }
 
 async function pollLiveDistance() {

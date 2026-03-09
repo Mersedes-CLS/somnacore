@@ -52,5 +52,5 @@ constexpr const char* BACKEND_BASE = "https://somnacore-production.up.railway.ap
 constexpr const char* BACKEND_URL  = "https://somnacore-production.up.railway.app/api/set";
 
 // --- Calibration remote timing ---
-constexpr uint16_t CALIB_PUSH_INTERVAL_MS = 500;
-constexpr uint16_t CALIB_POLL_INTERVAL_MS = 1000;
+constexpr uint16_t CALIB_PUSH_INTERVAL_MS = 3000;
+constexpr uint16_t CALIB_POLL_INTERVAL_MS = 3000;

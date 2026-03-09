@@ -1,4 +1,5 @@
 #include "calibrator.h"
+#include "../config.h"
 #include "../drivers/vl53l0x.h"
 #include "../net/web_server.h"
 #include <Arduino.h>
