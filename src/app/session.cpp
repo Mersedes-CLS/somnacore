@@ -1,5 +1,6 @@
 #include "session.h"
 #include "../net/api_client.h"
+#include "../calib/calibrator.h"
 
 void Session::feedRep(int16_t romMm) {
     if (curReps_ == 0) {
@@ -31,8 +32,14 @@ void Session::closeSet() {
     }
     setCount_++;
 
+    // Determine weight from calibration if available
+    int weightKg = -1;
+    if (calibrator_ && lastDist_) {
+        weightKg = calibrator_->distToWeightKg(*lastDist_);
+    }
+
     // Send completed set to backend
-    net::sendSet(curReps_, curRom_, millis() - setStartTime_);
+    net::sendSet(curReps_, curRom_, millis() - setStartTime_, weightKg);
 
     curReps_ = 0;
     curRom_ = 0;

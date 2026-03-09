@@ -5,6 +5,7 @@ const { migrate } = require("./db");
 const setsRouter = require("./routes/sets");
 const machinesRouter = require("./routes/machines");
 const statsRouter = require("./routes/stats");
+const calibRouter = require("./routes/calibration");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -18,6 +19,7 @@ app.get("/api/health", (_req, res) => {
 app.use("/api", setsRouter);
 app.use("/api", machinesRouter);
 app.use("/api", statsRouter);
+app.use("/api", calibRouter);
 
 app.use(express.static(path.join(__dirname, "public")));
 

@@ -35,8 +35,9 @@ XSHUT wire prevents floating XSHUT from putting sensor into standby. Alternative
 
 ## Libraries
 
-No external libraries — Wire.h, WiFi.h, WebServer.h are built into ESP32 Arduino framework.
-VL53L0X controlled via direct register access (no Pololu/Adafruit library).
+- Wire.h, WiFi.h, WebServer.h — built into ESP32 Arduino framework
+- ArduinoJson v7 — JSON parsing for calibration client (added in platformio.ini)
+- VL53L0X controlled via direct register access (no Pololu/Adafruit library)
 
 ## Known Issues
 
@@ -90,6 +91,42 @@ Isolated test sketches in `step_A` through `step_E` subdirectories. Upload each 
 9. VHV calibration (set 0x01=0x01, start with 0x40, wait 0x13)
 10. Phase calibration (set 0x01=0x02, start with 0x00, wait 0x13)
 11. Restore sequence config (0x01 = 0xE8)
+
+## Calibration System
+
+Калибровка (маппинг расстояние → вес_кг) через Telegram Mini App. ESP32 не имеет прямой связи с Mini App — общение через бэкенд.
+
+### Поток данных
+```
+ESP32 --[POST distance каждые 500мс]--> Backend
+Mini App --[GET /api/calib/live опрос 500мс]--> Backend (видит живое расстояние)
+Mini App --[POST /api/calib/command "measure"]--> Backend
+ESP32 --[опрос /api/calib/command каждую 1с]--> Backend (забирает команду)
+ESP32 --[25-сэмплов измерение]--> POST /api/calib/result --> Backend
+Mini App --[опрос /api/calib/result]--> видит результат
+```
+
+### Ключевые файлы калибровки
+- `src/calib/calibrator.h/.cpp` — Serial + удалённая калибровка, `distToWeightKg()`
+- `src/net/calib_client.h/.cpp` — HTTP клиент для /api/calib/* эндпоинтов
+- `server/routes/calibration.js` — 8 REST эндпоинтов калибровки
+- `server/public/app.js` — Wizard калибровки в Mini App
+
+### Таблицы БД
+- `calibrations` — сохранённые точки (machine_id, position, weight_kg, distance_mm, jitter)
+- `calib_state` — живое состояние (live_distance, pending_command, measure_result)
+
+### API эндпоинты калибровки
+| Метод | Путь | Кто вызывает | Назначение |
+|-------|------|-------------|------------|
+| POST | /api/calib/live | ESP32 | Пуш живого расстояния |
+| GET | /api/calib/live | Mini App | Чтение живого расстояния |
+| POST | /api/calib/command | Mini App | Отправка команды ESP32 |
+| GET | /api/calib/command | ESP32 | Опрос и потребление команды |
+| POST | /api/calib/result | ESP32 | Отправка результата измерения |
+| GET | /api/calib/result | Mini App | Опрос результата |
+| GET | /api/calib/table | Оба | Полная таблица калибровки |
+| DELETE | /api/calib/table | Mini App | Сброс калибровки |
 
 ## Common I2C Failure Modes
 

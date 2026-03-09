@@ -218,9 +218,74 @@ void Calibrator::handleCommand(char cmd) {
     }
 }
 
+// ─── Remote calibration (via backend) ────────────────────
+
+void Calibrator::tickRemote() {
+    uint32_t now = millis();
+
+    // Push live distance every CALIB_PUSH_INTERVAL_MS
+    if (now - remotePushTimer_ >= CALIB_PUSH_INTERVAL_MS) {
+        remotePushTimer_ = now;
+        if (sensor_) {
+            uint16_t d = sensor_->readDistance();
+            if (d > 0 && d < 8190) {
+                net::calibPushDistance(d);
+            }
+        }
+    }
+
+    // Poll for commands every CALIB_POLL_INTERVAL_MS
+    if (now - remotePollTimer_ >= CALIB_POLL_INTERVAL_MS) {
+        remotePollTimer_ = now;
+        net::CalibCommand cmd = net::calibPollCommand();
+        if (cmd.hasCommand) {
+            if (strcmp(cmd.command, "measure") == 0) {
+                uint8_t idx = (uint8_t)cmd.position;
+                if (idx < NUM_POS) {
+                    Serial.printf("[CALIB] Remote measure command: pos=%d (%d kg)\n", idx, posKg(idx));
+                    if (doMeasure(idx)) {
+                        net::calibPostResult(
+                            idx, posKg(idx),
+                            table_[idx].dist, table_[idx].dmin,
+                            table_[idx].dmax, table_[idx].jitter
+                        );
+                    }
+                }
+            }
+        }
+    }
+}
+
+void Calibrator::loadFromServer() {
+    serverTableCount_ = net::calibLoadTable(serverTable_, NUM_POS);
+}
+
+int Calibrator::distToWeightKg(uint16_t distMm) const {
+    if (serverTableCount_ == 0) return -1;
+
+    int bestIdx = -1;
+    int bestDiff = 999999;
+    for (int i = 0; i < NUM_POS; i++) {
+        if (!serverTable_[i].valid) continue;
+        int diff = abs((int)distMm - serverTable_[i].distance_mm);
+        if (diff < bestDiff) {
+            bestDiff = diff;
+            bestIdx = i;
+        }
+    }
+
+    if (bestIdx < 0) return -1;
+    // Only match if within reasonable range (half the jitter or 50mm, whichever is larger)
+    if (bestDiff > 50) return -1;
+    return serverTable_[bestIdx].weight_kg;
+}
+
 // ─── Main tick (called every loop) ────────────────────────
 
 void Calibrator::tick() {
+    // Remote calibration: push distance and poll commands
+    tickRemote();
+
     // Live mode: print distance every 200 ms
     if (liveMode_) {
         if (millis() - liveTimer_ >= 200) {

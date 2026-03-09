@@ -54,6 +54,9 @@ void setup() {
     net::wifiConnect();
     net::webServerInit(&lastDistance, &session);
     calibrator.begin(&sensor);
+    calibrator.loadFromServer();
+    session.setCalibrator(&calibrator);
+    session.setLastDistance(&lastDistance);
 }
 
 void loop() {

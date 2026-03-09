@@ -6,7 +6,7 @@
 
 namespace net {
 
-void sendSet(uint8_t reps, uint16_t romMm, uint32_t durationMs) {
+void sendSet(uint8_t reps, uint16_t romMm, uint32_t durationMs, int weightKg) {
     if (WiFi.status() != WL_CONNECTED) {
         Serial.println("[API] WiFi not connected, skipping POST");
         return;
@@ -28,6 +28,10 @@ void sendSet(uint8_t reps, uint16_t romMm, uint32_t durationMs) {
     body += romMm;
     body += ",\"duration_sec\":";
     body += durationSec;
+    if (weightKg >= 0) {
+        body += ",\"weight_kg\":";
+        body += weightKg;
+    }
     body += "}";
 
     int code = http.POST(body);

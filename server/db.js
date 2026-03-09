@@ -26,6 +26,32 @@ async function migrate() {
       timestamp TIMESTAMPTZ DEFAULT NOW()
     )
   `);
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS calibrations (
+      machine_id TEXT NOT NULL,
+      position INTEGER NOT NULL,
+      weight_kg INTEGER NOT NULL,
+      distance_mm INTEGER NOT NULL,
+      dist_min INTEGER,
+      dist_max INTEGER,
+      jitter INTEGER,
+      calibrated_at TIMESTAMPTZ DEFAULT NOW(),
+      UNIQUE(machine_id, position)
+    )
+  `);
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS calib_state (
+      machine_id TEXT PRIMARY KEY,
+      live_distance_mm INTEGER,
+      distance_updated_at TIMESTAMPTZ,
+      pending_command TEXT,
+      command_position INTEGER,
+      measure_result JSONB,
+      result_updated_at TIMESTAMPTZ
+    )
+  `);
 }
 
 module.exports = { pool, migrate };

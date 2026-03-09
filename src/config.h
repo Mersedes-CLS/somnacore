@@ -48,4 +48,9 @@ constexpr uint16_t HTTP_PORT = 80;
 constexpr const char* MACHINE_ID = "machine_01";
 
 // --- Backend server ---
-constexpr const char* BACKEND_URL = "https://somnacore-production.up.railway.app/api/set";
+constexpr const char* BACKEND_BASE = "https://somnacore-production.up.railway.app";
+constexpr const char* BACKEND_URL  = "https://somnacore-production.up.railway.app/api/set";
+
+// --- Calibration remote timing ---
+constexpr uint16_t CALIB_PUSH_INTERVAL_MS = 500;
+constexpr uint16_t CALIB_POLL_INTERVAL_MS = 1000;

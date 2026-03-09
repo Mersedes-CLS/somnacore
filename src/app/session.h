@@ -5,10 +5,14 @@
 #include "../config.h"
 #include "set_record.h"
 
+namespace calib { class Calibrator; }
+
 enum class SessionState : uint8_t { IDLE, IN_SET, REST };
 
 class Session {
 public:
+    void     setCalibrator(calib::Calibrator* cal) { calibrator_ = cal; }
+    void     setLastDistance(volatile uint16_t* ptr) { lastDist_ = ptr; }
     void     feedRep(int16_t romMm);    // called when RepDetector reports a rep
     void     tick();                     // call each loop — checks 30s timeout
     void     reset();
@@ -24,6 +28,8 @@ public:
 private:
     void closeSet();
 
+    calib::Calibrator* calibrator_ = nullptr;
+    volatile uint16_t* lastDist_   = nullptr;
     SessionState state_     = SessionState::IDLE;
     uint8_t  curReps_       = 0;
     uint16_t curRom_        = 0;

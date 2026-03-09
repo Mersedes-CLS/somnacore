@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include "../net/calib_client.h"
 
 class VL53L0X;
 
@@ -10,6 +11,12 @@ class Calibrator {
 public:
     void begin(VL53L0X* sensor);
     void tick();  // call every main loop iteration
+
+    // Load calibration table from server (call after WiFi connects)
+    void loadFromServer();
+
+    // Look up weight from distance. Returns -1 if no calibration or out of range.
+    int distToWeightKg(uint16_t distMm) const;
 
 private:
     static constexpr uint8_t  NUM_POS     = 17;
@@ -31,6 +38,14 @@ private:
     bool      liveMode_    = false;
     uint32_t  liveTimer_   = 0;
 
+    // Remote calibration state
+    uint32_t  remotePushTimer_ = 0;
+    uint32_t  remotePollTimer_ = 0;
+
+    // Server-loaded calibration for weight lookup
+    net::CalibPoint serverTable_[NUM_POS] = {};
+    int serverTableCount_ = 0;
+
     uint8_t posKg(uint8_t i) const { return FIRST_KG + i * STEP_KG; }
 
     void printHelp();
@@ -39,6 +54,7 @@ private:
     bool doMeasure(uint8_t idx);
     void resetAll();
     void handleCommand(char cmd);
+    void tickRemote();
 };
 
 }  // namespace calib
