@@ -3,10 +3,23 @@ const path = require("path");
 
 const db = new Database(path.join(__dirname, "lazer.db"));
 db.pragma("journal_mode = WAL");
+db.pragma("foreign_keys = ON");
+
+// --- Migrations ---
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS machines (
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL,
+    muscle_group TEXT,
+    location TEXT
+  )
+`);
 
 db.exec(`
   CREATE TABLE IF NOT EXISTS sets (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
+    machine_id TEXT REFERENCES machines(id),
     reps INTEGER NOT NULL,
     rom_mm INTEGER,
     duration_sec INTEGER,
@@ -15,12 +28,10 @@ db.exec(`
   )
 `);
 
-const insertSet = db.prepare(
-  "INSERT INTO sets (reps, rom_mm, duration_sec, weight_kg) VALUES (?, ?, ?, ?)"
-);
+// Add machine_id column if migrating from old schema
+const cols = db.pragma("table_info(sets)").map((c) => c.name);
+if (!cols.includes("machine_id")) {
+  db.exec("ALTER TABLE sets ADD COLUMN machine_id TEXT REFERENCES machines(id)");
+}
 
-const getAllSets = db.prepare(
-  "SELECT id, reps, rom_mm, duration_sec, weight_kg, timestamp FROM sets ORDER BY id DESC"
-);
-
-module.exports = { insertSet, getAllSets };
+module.exports = db;
