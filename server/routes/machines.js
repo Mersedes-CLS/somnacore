@@ -27,6 +27,18 @@ router.post("/machines", async (req, res) => {
   }
 });
 
+router.put("/machines/:id", async (req, res) => {
+  const { name, muscle_group, location } = req.body;
+  const result = await pool.query(
+    "UPDATE machines SET name = COALESCE($1, name), muscle_group = COALESCE($2, muscle_group), location = COALESCE($3, location) WHERE id = $4 RETURNING *",
+    [name ?? null, muscle_group ?? null, location ?? null, req.params.id]
+  );
+  if (result.rows.length === 0) {
+    return res.status(404).json({ error: "machine not found" });
+  }
+  res.json({ ...result.rows[0], ok: true });
+});
+
 router.get("/machines/:id", async (req, res) => {
   const machine = await pool.query(
     "SELECT id, name, muscle_group, location FROM machines WHERE id = $1",
