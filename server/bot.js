@@ -29,7 +29,9 @@ function startBot() {
     }
   });
 
-  bot.start();
+  bot.start().catch((err) => {
+    console.error("Telegram bot failed:", err.message);
+  });
   console.log("Telegram bot started (long-polling)");
 }
 
