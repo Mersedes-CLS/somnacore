@@ -1,4 +1,5 @@
 #include "session.h"
+#include "../net/api_client.h"
 
 void Session::feedRep(int16_t romMm) {
     if (curReps_ == 0) {
@@ -29,6 +30,10 @@ void Session::closeSet() {
         };
     }
     setCount_++;
+
+    // Send completed set to backend
+    net::sendSet(curReps_, curRom_, millis() - setStartTime_);
+
     curReps_ = 0;
     curRom_ = 0;
     lastRepTime_ = 0;

@@ -43,3 +43,7 @@ constexpr uint8_t  MAX_SETS           = 32;
 
 // --- Web server ---
 constexpr uint16_t HTTP_PORT = 80;
+
+// --- Backend server ---
+constexpr const char* BACKEND_HOST = "192.168.0.101";  // ← IP твоего ПК
+constexpr uint16_t    BACKEND_PORT = 3000;

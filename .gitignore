@@ -2,3 +2,5 @@
 .vscode/
 Lib/
 Scripts/
+server/node_modules/
+server/lazer.db

@@ -7,11 +7,13 @@
 #include "app/session.h"
 #include "net/wifi_manager.h"
 #include "net/web_server.h"
+#include "calib/calibrator.h"
 
 static VL53L0X sensor(ADDR_VL53L0X, PIN_XSHUT_TOP);
 static MedianFilter filter;
 static RepDetector repDetector;
 static Session session;
+static calib::Calibrator calibrator;
 static volatile uint16_t lastDistance = 0;
 static bool sensorOK = false;
 static int errorCount = 0;
@@ -51,10 +53,12 @@ void setup() {
 
     net::wifiConnect();
     net::webServerInit(&lastDistance, &session);
+    calibrator.begin(&sensor);
 }
 
 void loop() {
     net::webServerHandle();
+    calibrator.tick();
 
     if (!sensorOK) {
         sensorOK = sensor.reset();
