@@ -26,8 +26,8 @@ constexpr uint8_t  MAX_INIT_RETRIES   = 5;
 constexpr uint16_t LOOP_DELAY_MS      = 50;
 
 // --- WiFi ---
-constexpr const char* WIFI_SSID = "Pepega";
-constexpr const char* WIFI_PASS = "1085620489";
+constexpr const char* WIFI_SSID = "TP-Link_1018";
+constexpr const char* WIFI_PASS = "46657763";
 constexpr uint8_t  WIFI_MAX_ATTEMPTS  = 20;
 constexpr uint16_t WIFI_RETRY_MS      = 500;
 
@@ -48,5 +48,4 @@ constexpr uint16_t HTTP_PORT = 80;
 constexpr const char* MACHINE_ID = "machine_01";
 
 // --- Backend server ---
-constexpr const char* BACKEND_HOST = "192.168.0.101";  // ← IP твоего ПК
-constexpr uint16_t    BACKEND_PORT = 3000;
+constexpr const char* BACKEND_URL = "https://somnacore-production.up.railway.app/api/set";

@@ -1,6 +1,7 @@
 #include "api_client.h"
 #include "../config.h"
 #include <HTTPClient.h>
+#include <WiFiClientSecure.h>
 #include <WiFi.h>
 
 namespace net {
@@ -11,9 +12,11 @@ void sendSet(uint8_t reps, uint16_t romMm, uint32_t durationMs) {
         return;
     }
 
+    WiFiClientSecure client;
+    client.setInsecure();  // skip cert verification (ok for this use case)
+
     HTTPClient http;
-    String url = String("http://") + BACKEND_HOST + ":" + BACKEND_PORT + "/api/set";
-    http.begin(url);
+    http.begin(client, BACKEND_URL);
     http.addHeader("Content-Type", "application/json");
 
     uint32_t durationSec = durationMs / 1000;
