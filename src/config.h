@@ -40,6 +40,7 @@ constexpr float    BASELINE_DECAY     = 0.98f;
 constexpr float    BASELINE_ADAPT     = 0.02f;
 constexpr uint32_t SET_TIMEOUT_MS     = 30000;
 constexpr uint8_t  MAX_SETS           = 32;
+constexpr uint8_t  DIST_BUF_SIZE      = 64;
 
 // --- Web server ---
 constexpr uint16_t HTTP_PORT = 80;

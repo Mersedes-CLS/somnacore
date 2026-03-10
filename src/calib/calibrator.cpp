@@ -259,26 +259,123 @@ void Calibrator::tickRemote() {
 
 void Calibrator::loadFromServer() {
     serverTableCount_ = net::calibLoadTable(serverTable_, NUM_POS);
+    buildBoundaries();
 }
 
-int Calibrator::distToWeightKg(uint16_t distMm) const {
-    if (serverTableCount_ == 0) return -1;
+void Calibrator::buildBoundaries() {
+    sortedCount_ = 0;
 
-    int bestIdx = -1;
-    int bestDiff = 999999;
+    // Collect valid points
     for (int i = 0; i < NUM_POS; i++) {
         if (!serverTable_[i].valid) continue;
-        int diff = abs((int)distMm - serverTable_[i].distance_mm);
-        if (diff < bestDiff) {
-            bestDiff = diff;
-            bestIdx = i;
+        sorted_[sortedCount_++] = { (uint16_t)serverTable_[i].distance_mm,
+                                     serverTable_[i].weight_kg };
+    }
+
+    if (sortedCount_ < 2) return;
+
+    // Insertion sort by distance
+    for (uint8_t i = 1; i < sortedCount_; i++) {
+        SortedPoint key = sorted_[i];
+        int8_t j = (int8_t)i - 1;
+        while (j >= 0 && sorted_[j].dist > key.dist) {
+            sorted_[j + 1] = sorted_[j];
+            j--;
+        }
+        sorted_[j + 1] = key;
+    }
+
+    // Check monotonicity and compute midpoints
+    for (uint8_t i = 0; i < sortedCount_ - 1; i++) {
+        boundaries_[i] = (sorted_[i].dist + sorted_[i + 1].dist) / 2;
+        if (sorted_[i].dist >= sorted_[i + 1].dist) {
+            Serial.printf("[CALIB] WARN: non-monotonic positions %d mm and %d mm\n",
+                sorted_[i].dist, sorted_[i + 1].dist);
         }
     }
 
-    if (bestIdx < 0) return -1;
-    // Only match if within reasonable range (half the jitter or 50mm, whichever is larger)
-    if (bestDiff > 50) return -1;
-    return serverTable_[bestIdx].weight_kg;
+    Serial.printf("[CALIB] Boundaries built: %d positions\n", sortedCount_);
+    for (uint8_t i = 0; i < sortedCount_ - 1; i++) {
+        Serial.printf("  %d kg (%d mm) | boundary %d mm | %d kg (%d mm)\n",
+            sorted_[i].weightKg, sorted_[i].dist,
+            boundaries_[i],
+            sorted_[i + 1].weightKg, sorted_[i + 1].dist);
+    }
+}
+
+int Calibrator::distToWeightKg(const uint16_t* buf, uint8_t count) const {
+    if (sortedCount_ == 0 || count == 0) return -1;
+
+    // --- 1. Copy buffer and sort (insertion sort) ---
+    uint16_t tmp[DIST_BUF_SIZE];
+    uint8_t n = (count > DIST_BUF_SIZE) ? DIST_BUF_SIZE : count;
+    for (uint8_t i = 0; i < n; i++) tmp[i] = buf[i];
+
+    for (uint8_t i = 1; i < n; i++) {
+        uint16_t key = tmp[i];
+        int8_t j = (int8_t)i - 1;
+        while (j >= 0 && tmp[j] > key) { tmp[j + 1] = tmp[j]; j--; }
+        tmp[j + 1] = key;
+    }
+
+    // --- 2. Outlier rejection ---
+    // Compute half-gap from first/last calibration points
+    uint16_t halfGap = 0;
+    if (sortedCount_ >= 2) {
+        // Average gap between positions
+        uint16_t totalSpan = sorted_[sortedCount_ - 1].dist - sorted_[0].dist;
+        halfGap = totalSpan / (sortedCount_ - 1) / 2;
+    } else {
+        halfGap = 50;  // single point fallback
+    }
+
+    uint16_t lo = (sorted_[0].dist > halfGap) ? sorted_[0].dist - halfGap : 0;
+    uint16_t hi = sorted_[sortedCount_ - 1].dist + halfGap;
+
+    // Filter to valid range
+    uint16_t filtered[DIST_BUF_SIZE];
+    uint8_t fCount = 0;
+    for (uint8_t i = 0; i < n; i++) {
+        if (tmp[i] >= lo && tmp[i] <= hi) {
+            filtered[fCount++] = tmp[i];
+        }
+    }
+
+    if (fCount == 0) {
+        Serial.println("[CALIB] All samples rejected as outliers");
+        return -1;
+    }
+
+    // --- 3. Median ---
+    uint16_t median = filtered[fCount / 2];
+
+    // --- 4. Boundary lookup ---
+    // Below first boundary → first position
+    // Above last boundary → last position
+    int matchIdx = sortedCount_ - 1;  // default: last position
+    for (uint8_t i = 0; i < sortedCount_ - 1; i++) {
+        if (median < boundaries_[i]) {
+            matchIdx = i;
+            break;
+        }
+    }
+
+    // --- 5. Confidence check ---
+    // Check if median is within ±30% of nearest boundary
+    for (uint8_t i = 0; i < sortedCount_ - 1; i++) {
+        uint16_t bnd = boundaries_[i];
+        uint16_t zone = (sorted_[i + 1].dist - sorted_[i].dist) * 30 / 100;
+        if (median >= bnd - zone && median <= bnd + zone) {
+            Serial.printf("[CALIB] WARN: low confidence — median %d mm near boundary %d mm\n",
+                median, bnd);
+            break;
+        }
+    }
+
+    Serial.printf("[SET] weight=%d kg (median=%d mm, %d samples)\n",
+        sorted_[matchIdx].weightKg, median, fCount);
+
+    return sorted_[matchIdx].weightKg;
 }
 
 // ─── Main tick (called every loop) ────────────────────────

@@ -15,8 +15,12 @@ public:
     // Load calibration table from server (call after WiFi connects)
     void loadFromServer();
 
-    // Look up weight from distance. Returns -1 if no calibration or out of range.
-    int distToWeightKg(uint16_t distMm) const;
+    // Look up weight from distance buffer. Returns -1 if no calibration or out of range.
+    // Takes ring buffer of distance readings collected during the set.
+    int distToWeightKg(const uint16_t* buf, uint8_t count) const;
+
+    // Rebuild midpoint boundaries after loading calibration table.
+    void buildBoundaries();
 
 private:
     static constexpr uint8_t  NUM_POS     = 17;
@@ -45,6 +49,15 @@ private:
     // Server-loaded calibration for weight lookup
     net::CalibPoint serverTable_[NUM_POS] = {};
     int serverTableCount_ = 0;
+
+    // Sorted calibration points and midpoint boundaries
+    struct SortedPoint {
+        uint16_t dist;
+        int      weightKg;
+    };
+    SortedPoint sorted_[NUM_POS] = {};
+    uint16_t    boundaries_[NUM_POS - 1] = {};  // midpoints between sorted positions
+    uint8_t     sortedCount_ = 0;
 
     uint8_t posKg(uint8_t i) const { return FIRST_KG + i * STEP_KG; }
 

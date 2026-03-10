@@ -2,9 +2,19 @@
 #include "../net/api_client.h"
 #include "../calib/calibrator.h"
 
+void Session::feedDistance(uint16_t dist) {
+    if (state_ != SessionState::IN_SET) return;
+    distBuf_[distBufIdx_] = dist;
+    distBufIdx_ = (distBufIdx_ + 1) % DIST_BUF_SIZE;
+    if (distBufCount_ < DIST_BUF_SIZE) distBufCount_++;
+}
+
 void Session::feedRep(int16_t romMm) {
     if (curReps_ == 0) {
         setStartTime_ = millis();
+        // Reset distance buffer at start of new set
+        distBufIdx_ = 0;
+        distBufCount_ = 0;
     }
     curReps_++;
     if (static_cast<uint16_t>(romMm) > curRom_) {
@@ -32,10 +42,10 @@ void Session::closeSet() {
     }
     setCount_++;
 
-    // Determine weight from calibration if available
+    // Determine weight from accumulated distance buffer
     int weightKg = -1;
-    if (calibrator_ && lastDist_) {
-        weightKg = calibrator_->distToWeightKg(*lastDist_);
+    if (calibrator_ && distBufCount_ > 0) {
+        weightKg = calibrator_->distToWeightKg(distBuf_, (uint8_t)distBufCount_);
     }
 
     // Send completed set to backend
@@ -44,6 +54,8 @@ void Session::closeSet() {
     curReps_ = 0;
     curRom_ = 0;
     lastRepTime_ = 0;
+    distBufIdx_ = 0;
+    distBufCount_ = 0;
     state_ = SessionState::REST;
 }
 
@@ -54,6 +66,8 @@ void Session::reset() {
     setCount_ = 0;
     lastRepTime_ = 0;
     setStartTime_ = 0;
+    distBufIdx_ = 0;
+    distBufCount_ = 0;
 }
 
 const char* Session::stateStr() const {

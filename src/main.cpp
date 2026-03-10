@@ -56,7 +56,6 @@ void setup() {
     calibrator.begin(&sensor);
     calibrator.loadFromServer();
     session.setCalibrator(&calibrator);
-    session.setLastDistance(&lastDistance);
 }
 
 void loop() {
@@ -84,6 +83,11 @@ void loop() {
 
     errorCount = 0;
     lastDistance = dist;
+
+    // Accumulate distance for weight determination during active set
+    if (session.state() == SessionState::IN_SET) {
+        session.feedDistance(dist);
+    }
 
     if (dist != 0) {
         if (repDetector.update(dist)) {
