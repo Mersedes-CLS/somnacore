@@ -42,6 +42,9 @@ constexpr uint32_t SET_TIMEOUT_MS     = 30000;
 constexpr uint8_t  MAX_SETS           = 32;
 constexpr uint8_t  DIST_BUF_SIZE      = 64;
 
+// --- Live weight push ---
+constexpr uint16_t CALIB_LIVE_PUSH_MS = 2000;
+
 // --- Web server ---
 constexpr uint16_t HTTP_PORT = 80;
 
@@ -51,7 +54,3 @@ constexpr const char* MACHINE_ID = "machine_01";
 // --- Backend server ---
 constexpr const char* BACKEND_BASE = "https://somnacore-production.up.railway.app";
 constexpr const char* BACKEND_URL  = "https://somnacore-production.up.railway.app/api/set";
-
-// --- Calibration remote timing ---
-constexpr uint16_t CALIB_PUSH_INTERVAL_MS = 3000;
-constexpr uint16_t CALIB_POLL_INTERVAL_MS = 3000;

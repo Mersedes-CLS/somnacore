@@ -7,57 +7,6 @@
 
 namespace net {
 
-void calibPushDistance(uint16_t distMm) {
-    if (WiFi.status() != WL_CONNECTED) return;
-
-    WiFiClientSecure client;
-    client.setInsecure();
-    HTTPClient http;
-    String url = String(BACKEND_BASE) + "/api/calib/live";
-    http.begin(client, url);
-    http.addHeader("Content-Type", "application/json");
-    http.setTimeout(5000);
-
-    String body = "{\"machine_id\":\"";
-    body += MACHINE_ID;
-    body += "\",\"distance_mm\":";
-    body += distMm;
-    body += "}";
-
-    int code = http.POST(body);
-    Serial.printf("[CALIB] push dist=%d -> %d\n", distMm, code);
-    http.end();
-}
-
-CalibCommand calibPollCommand() {
-    CalibCommand result = { false, "", 0 };
-    if (WiFi.status() != WL_CONNECTED) return result;
-
-    WiFiClientSecure client;
-    client.setInsecure();
-    HTTPClient http;
-    String url = String(BACKEND_BASE) + "/api/calib/command?machine_id=" + MACHINE_ID;
-    http.begin(client, url);
-    http.setTimeout(5000);
-
-    int code = http.GET();
-    Serial.printf("[CALIB] poll cmd -> %d\n", code);
-    if (code == 200) {
-        String payload = http.getString();
-        Serial.printf("[CALIB] cmd body: %s\n", payload.c_str());
-        JsonDocument doc;
-        if (deserializeJson(doc, payload) == DeserializationError::Ok) {
-            if (!doc["command"].isNull()) {
-                result.hasCommand = true;
-                strlcpy(result.command, doc["command"].as<const char*>(), sizeof(result.command));
-                result.position = doc["position"] | 0;
-            }
-        }
-    }
-    http.end();
-    return result;
-}
-
 void calibPostResult(int position, int weightKg, int distMm, int dmin, int dmax, int jitter) {
     if (WiFi.status() != WL_CONNECTED) return;
 
@@ -87,6 +36,29 @@ void calibPostResult(int position, int weightKg, int distMm, int dmin, int dmax,
 
     int code = http.POST(body);
     Serial.printf("[CALIB] result posted pos=%d -> %d\n", position, code);
+    http.end();
+}
+
+void calibPushLive(uint16_t distMm, int weightKg) {
+    if (WiFi.status() != WL_CONNECTED) return;
+
+    WiFiClientSecure client;
+    client.setInsecure();
+    HTTPClient http;
+    String url = String(BACKEND_BASE) + "/api/calib/live";
+    http.begin(client, url);
+    http.addHeader("Content-Type", "application/json");
+    http.setTimeout(3000);
+
+    String body = "{\"machine_id\":\"";
+    body += MACHINE_ID;
+    body += "\",\"distance_mm\":";
+    body += distMm;
+    body += ",\"weight_kg\":";
+    body += weightKg;
+    body += "}";
+
+    http.POST(body);
     http.end();
 }
 

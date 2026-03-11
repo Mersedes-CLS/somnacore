@@ -99,6 +99,8 @@ void Calibrator::promptPos() {
         Serial.println("=== CALIBRATION COMPLETE ===");
         printTable();
         calibrating_ = false;
+        // Reload from server and rebuild boundaries for weight lookup
+        loadFromServer();
         return;
     }
     Serial.println();
@@ -203,6 +205,12 @@ void Calibrator::handleCommand(char cmd) {
         case '\0':  // bare ENTER
             if (calibrating_) {
                 if (doMeasure(currentPos_)) {
+                    // Save to server (same as remote calibration)
+                    net::calibPostResult(
+                        currentPos_, posKg(currentPos_),
+                        table_[currentPos_].dist, table_[currentPos_].dmin,
+                        table_[currentPos_].dmax, table_[currentPos_].jitter
+                    );
                     currentPos_++;
                     promptPos();
                 } else {
@@ -216,44 +224,6 @@ void Calibrator::handleCommand(char cmd) {
         default:
             Serial.printf("Unknown: '%c'. Type 'h' for help.\n", cmd);
             break;
-    }
-}
-
-// ─── Remote calibration (via backend) ────────────────────
-
-void Calibrator::tickRemote() {
-    uint32_t now = millis();
-
-    // Push live distance every CALIB_PUSH_INTERVAL_MS
-    if (now - remotePushTimer_ >= CALIB_PUSH_INTERVAL_MS) {
-        remotePushTimer_ = now;
-        if (sensor_) {
-            uint16_t d = sensor_->readDistance();
-            if (d > 0 && d < 8190) {
-                net::calibPushDistance(d);
-            }
-        }
-    }
-
-    // Poll for commands every CALIB_POLL_INTERVAL_MS
-    if (now - remotePollTimer_ >= CALIB_POLL_INTERVAL_MS) {
-        remotePollTimer_ = now;
-        net::CalibCommand cmd = net::calibPollCommand();
-        if (cmd.hasCommand) {
-            if (strcmp(cmd.command, "measure") == 0) {
-                uint8_t idx = (uint8_t)cmd.position;
-                if (idx < NUM_POS) {
-                    Serial.printf("[CALIB] Remote measure command: pos=%d (%d kg)\n", idx, posKg(idx));
-                    if (doMeasure(idx)) {
-                        net::calibPostResult(
-                            idx, posKg(idx),
-                            table_[idx].dist, table_[idx].dmin,
-                            table_[idx].dmax, table_[idx].jitter
-                        );
-                    }
-                }
-            }
-        }
     }
 }
 
@@ -381,9 +351,6 @@ int Calibrator::distToWeightKg(const uint16_t* buf, uint8_t count) const {
 // ─── Main tick (called every loop) ────────────────────────
 
 void Calibrator::tick() {
-    // Remote calibration: push distance and poll commands
-    tickRemote();
-
     // Live mode: print distance every 200 ms
     if (liveMode_) {
         if (millis() - liveTimer_ >= 200) {

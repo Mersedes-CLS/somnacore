@@ -41,17 +41,6 @@ async function migrate() {
     )
   `);
 
-  await pool.query(`
-    CREATE TABLE IF NOT EXISTS calib_state (
-      machine_id TEXT PRIMARY KEY,
-      live_distance_mm INTEGER,
-      distance_updated_at TIMESTAMPTZ,
-      pending_command TEXT,
-      command_position INTEGER,
-      measure_result JSONB,
-      result_updated_at TIMESTAMPTZ
-    )
-  `);
 }
 
 module.exports = { pool, migrate };

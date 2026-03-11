@@ -195,25 +195,18 @@ function renderStats(data) {
 
 // --- Calibration ---
 let calibMachineId = null;
+let calibTableTimer = null;
 let calibLiveTimer = null;
-let calibResultTimer = null;
-let calibWizardPos = 0;
-let calibWizardActive = false;
-const CALIB_NUM_POS = 17;
-const CALIB_FIRST_KG = 5;
-const CALIB_STEP_KG = 5;
-function calibPosKg(i) { return CALIB_FIRST_KG + i * CALIB_STEP_KG; }
 
 function stopCalibTimers() {
+  clearInterval(calibTableTimer);
+  calibTableTimer = null;
   clearInterval(calibLiveTimer);
-  clearInterval(calibResultTimer);
   calibLiveTimer = null;
-  calibResultTimer = null;
 }
 
 async function loadCalib() {
   stopCalibTimers();
-  calibWizardActive = false;
   const selectEl = document.getElementById("calib-machine-select");
   const contentEl = document.getElementById("calib-content");
   try {
@@ -251,6 +244,7 @@ async function loadCalibTable() {
 
     let html = `<button class="back-btn" id="calib-back">\u2190 Назад</button>`;
     html += `<div class="section-title">Калибровка: ${calibMachineId}</div>`;
+    html += `<div id="calib-live-weight" class="calib-live-weight">Датчик: загрузка...</div>`;
 
     if (table.length > 0) {
       html += `<table><tr><th>#</th><th>кг</th><th>мм</th><th>jitter</th></tr>`;
@@ -264,7 +258,6 @@ async function loadCalibTable() {
     }
 
     html += `<div class="calib-actions">`;
-    html += `<button class="calib-btn calib-btn-primary" id="calib-start-wizard">Калибровать</button>`;
     if (table.length > 0) {
       html += `<button class="calib-btn calib-btn-danger" id="calib-reset">Сбросить</button>`;
     }
@@ -273,11 +266,9 @@ async function loadCalibTable() {
     contentEl.innerHTML = html;
     document.getElementById("calib-back").addEventListener("click", () => {
       stopCalibTimers();
-      calibWizardActive = false;
       document.getElementById("calib-machine-select").style.display = "";
       contentEl.innerHTML = "";
     });
-    document.getElementById("calib-start-wizard").addEventListener("click", startCalibWizard);
     const resetBtn = document.getElementById("calib-reset");
     if (resetBtn) {
       resetBtn.addEventListener("click", async () => {
@@ -286,157 +277,42 @@ async function loadCalibTable() {
         loadCalibTable();
       });
     }
+
+    // Auto-refresh table every 5s to see new points from Serial calibration
+    clearInterval(calibTableTimer);
+    calibTableTimer = setInterval(loadCalibTable, 5000);
+
+    // Start live weight polling
+    pollCalibLive();
+    clearInterval(calibLiveTimer);
+    calibLiveTimer = setInterval(pollCalibLive, 2000);
   } catch (e) {
     contentEl.innerHTML = '<div class="empty">Ошибка загрузки</div>';
   }
 }
 
-function startCalibWizard() {
-  calibWizardPos = 0;
-  calibWizardActive = true;
-  renderWizardStep();
-}
-
-function renderWizardStep() {
-  const contentEl = document.getElementById("calib-content");
-  const kg = calibPosKg(calibWizardPos);
-  const progress = Math.round(((calibWizardPos) / CALIB_NUM_POS) * 100);
-
-  let html = `<div class="calib-wizard">`;
-  html += `<div class="calib-progress"><div class="calib-progress-bar" style="width:${progress}%"></div></div>`;
-  html += `<div class="calib-step-info">${calibWizardPos + 1} / ${CALIB_NUM_POS} &mdash; ${kg} кг</div>`;
-  html += `<div class="calib-instruction">Установите штифт на позицию ${calibWizardPos + 1} (${kg} кг) и держите неподвижно</div>`;
-  html += `<div class="calib-live" id="calib-live-display">Датчик: ---</div>`;
-  html += `<div id="calib-measure-result"></div>`;
-  html += `<div class="calib-actions">`;
-  html += `<button class="calib-btn calib-btn-primary" id="calib-measure-btn">Измерить</button>`;
-  html += `<button class="calib-btn" id="calib-skip-btn">Пропустить</button>`;
-  html += `<button class="calib-btn calib-btn-danger" id="calib-cancel-btn">Отмена</button>`;
-  html += `</div></div>`;
-  contentEl.innerHTML = html;
-
-  document.getElementById("calib-measure-btn").addEventListener("click", doCalibMeasure);
-  document.getElementById("calib-skip-btn").addEventListener("click", () => {
-    calibWizardPos++;
-    if (calibWizardPos >= CALIB_NUM_POS) finishCalibWizard();
-    else renderWizardStep();
-  });
-  document.getElementById("calib-cancel-btn").addEventListener("click", () => {
-    stopCalibTimers();
-    calibWizardActive = false;
-    loadCalibTable();
-  });
-
-  // Start live distance polling
-  stopCalibTimers();
-  pollLiveDistance();
-  calibLiveTimer = setInterval(pollLiveDistance, 2000);
-}
-
-async function pollLiveDistance() {
+async function pollCalibLive() {
+  const el = document.getElementById("calib-live-weight");
+  if (!el || !calibMachineId) return;
   try {
     const res = await fetch(`/api/calib/live?machine_id=${encodeURIComponent(calibMachineId)}`);
-    const data = await res.json();
-    const el = document.getElementById("calib-live-display");
-    if (!el) return;
-    if (data.stale || data.distance_mm == null) {
+    const d = await res.json();
+    if (!d.online) {
       el.textContent = "Датчик: оффлайн";
-      el.classList.add("calib-offline");
+      el.className = "calib-live-weight offline";
+    } else if (d.weight_kg > 0) {
+      el.innerHTML = `Сейчас: <strong>${d.weight_kg} кг</strong> <span class="calib-live-dist">(${d.distance_mm} мм)</span>`;
+      el.className = "calib-live-weight online";
     } else {
-      el.textContent = `Датчик: ${data.distance_mm} мм`;
-      el.classList.remove("calib-offline");
+      el.innerHTML = `Датчик: ${d.distance_mm} мм <span class="calib-live-dist">(вес не определён)</span>`;
+      el.className = "calib-live-weight online";
     }
-  } catch (e) { /* ignore */ }
-}
-
-async function doCalibMeasure() {
-  const measureBtn = document.getElementById("calib-measure-btn");
-  const resultEl = document.getElementById("calib-measure-result");
-  measureBtn.disabled = true;
-  measureBtn.textContent = "Измеряем...";
-  resultEl.innerHTML = '<div class="calib-measuring">Ожидание результата от ESP32...</div>';
-
-  // Send measure command
-  await fetch("/api/calib/command", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ machine_id: calibMachineId, command: "measure", position: calibWizardPos }),
-  });
-
-  // Poll for result
-  let attempts = 0;
-  clearInterval(calibResultTimer);
-  calibResultTimer = setInterval(async () => {
-    attempts++;
-    try {
-      const res = await fetch(`/api/calib/result?machine_id=${encodeURIComponent(calibMachineId)}`);
-      const data = await res.json();
-      if (data.result && data.result.position === calibWizardPos) {
-        clearInterval(calibResultTimer);
-        calibResultTimer = null;
-        showMeasureResult(data.result);
-      } else if (attempts > 30) {
-        clearInterval(calibResultTimer);
-        calibResultTimer = null;
-        resultEl.innerHTML = '<div class="calib-warn-text">Таймаут ожидания. ESP32 не ответил.</div>';
-        measureBtn.disabled = false;
-        measureBtn.textContent = "Измерить";
-      }
-    } catch (e) {
-      clearInterval(calibResultTimer);
-      calibResultTimer = null;
-      resultEl.innerHTML = '<div class="calib-warn-text">Ошибка сети</div>';
-      measureBtn.disabled = false;
-      measureBtn.textContent = "Измерить";
+  } catch {
+    if (el) {
+      el.textContent = "Датчик: ошибка связи";
+      el.className = "calib-live-weight offline";
     }
-  }, 500);
-}
-
-function showMeasureResult(result) {
-  const resultEl = document.getElementById("calib-measure-result");
-  const measureBtn = document.getElementById("calib-measure-btn");
-
-  let warn = "";
-  if (result.jitter > 30) warn += `<div class="calib-warn-text">Jitter высокий: ${result.jitter} мм</div>`;
-
-  resultEl.innerHTML = `
-    <div class="calib-result-card">
-      <div><strong>${result.weight_kg} кг</strong> &mdash; ${result.distance_mm} мм</div>
-      <div class="calib-result-details">min: ${result.dist_min} / max: ${result.dist_max} / jitter: ${result.jitter}</div>
-      ${warn}
-    </div>
-  `;
-
-  measureBtn.textContent = "Повторить";
-  measureBtn.disabled = false;
-
-  // Add Next button
-  const actionsEl = measureBtn.parentElement;
-  if (!document.getElementById("calib-next-btn")) {
-    const nextBtn = document.createElement("button");
-    nextBtn.id = "calib-next-btn";
-    nextBtn.className = "calib-btn calib-btn-primary";
-    nextBtn.textContent = "Далее";
-    nextBtn.addEventListener("click", () => {
-      calibWizardPos++;
-      if (calibWizardPos >= CALIB_NUM_POS) finishCalibWizard();
-      else renderWizardStep();
-    });
-    actionsEl.insertBefore(nextBtn, measureBtn.nextSibling);
   }
-}
-
-function finishCalibWizard() {
-  stopCalibTimers();
-  calibWizardActive = false;
-  const contentEl = document.getElementById("calib-content");
-  contentEl.innerHTML = `
-    <div class="calib-complete">
-      <div class="big-number">OK</div>
-      <div class="label">Калибровка завершена</div>
-    </div>
-  `;
-  setTimeout(loadCalibTable, 2000);
 }
 
 // Initial load

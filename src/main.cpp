@@ -8,6 +8,7 @@
 #include "net/wifi_manager.h"
 #include "net/web_server.h"
 #include "calib/calibrator.h"
+#include "net/calib_client.h"
 
 static VL53L0X sensor(ADDR_VL53L0X, PIN_XSHUT_TOP);
 static MedianFilter filter;
@@ -17,6 +18,7 @@ static calib::Calibrator calibrator;
 static volatile uint16_t lastDistance = 0;
 static bool sensorOK = false;
 static int errorCount = 0;
+static uint32_t lastLivePush = 0;
 
 void setup() {
     Serial.begin(115200);
@@ -83,6 +85,13 @@ void loop() {
 
     errorCount = 0;
     lastDistance = dist;
+
+    // Periodic live weight push to backend
+    if (millis() - lastLivePush >= CALIB_LIVE_PUSH_MS) {
+        lastLivePush = millis();
+        int wkg = calibrator.distToWeightKg(&dist, 1);
+        net::calibPushLive(dist, wkg);
+    }
 
     // Accumulate distance for weight determination during active set
     if (session.state() == SessionState::IN_SET) {

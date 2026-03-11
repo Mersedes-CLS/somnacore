@@ -42,10 +42,6 @@ private:
     bool      liveMode_    = false;
     uint32_t  liveTimer_   = 0;
 
-    // Remote calibration state
-    uint32_t  remotePushTimer_ = 0;
-    uint32_t  remotePollTimer_ = 0;
-
     // Server-loaded calibration for weight lookup
     net::CalibPoint serverTable_[NUM_POS] = {};
     int serverTableCount_ = 0;
@@ -67,7 +63,6 @@ private:
     bool doMeasure(uint8_t idx);
     void resetAll();
     void handleCommand(char cmd);
-    void tickRemote();
 };
 
 }  // namespace calib
