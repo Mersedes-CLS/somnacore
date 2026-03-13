@@ -98,35 +98,32 @@ Isolated test sketches in `step_A` through `step_E` subdirectories. Upload each 
 
 ### Поток данных
 ```
-ESP32 --[POST distance каждые 500мс]--> Backend
-Mini App --[GET /api/calib/live опрос 500мс]--> Backend (видит живое расстояние)
-Mini App --[POST /api/calib/command "measure"]--> Backend
-ESP32 --[опрос /api/calib/command каждую 1с]--> Backend (забирает команду)
-ESP32 --[25-сэмплов измерение]--> POST /api/calib/result --> Backend
-Mini App --[опрос /api/calib/result]--> видит результат
+ESP32 --[POST /api/calib/live каждые 2с]--> Backend (distance + weight, in-memory)
+Mini App --[GET /api/calib/live опрос 1с]--> Backend (видит live distance + weight)
+ESP32 --[Serial калибровка: 25 сэмплов]--> POST /api/calib/result --> Backend (upsert в БД)
+Mini App --[GET /api/calib/table]--> Backend (читает таблицу калибровки)
+ESP32 --[GET /api/calib/table при старте]--> Backend (загружает калибровку)
 ```
 
 ### Ключевые файлы калибровки
 - `src/calib/calibrator.h/.cpp` — Serial + удалённая калибровка, `distToWeightKg()`
 - `src/net/calib_client.h/.cpp` — HTTP клиент для /api/calib/* эндпоинтов
-- `server/routes/calibration.js` — 8 REST эндпоинтов калибровки
+- `server/routes/calibration.js` — 5 REST эндпоинтов калибровки
 - `server/public/app.js` — Wizard калибровки в Mini App
 
 ### Таблицы БД
-- `calibrations` — сохранённые точки (machine_id, position, weight_kg, distance_mm, jitter)
-- `calib_state` — живое состояние (live_distance, pending_command, measure_result)
+- `calibrations` — сохранённые точки (machine_id, position, weight_kg, distance_mm, dist_min, dist_max, jitter)
+
+Live данные (distance, weight) хранятся in-memory в Map на сервере, не в БД.
 
 ### API эндпоинты калибровки
 | Метод | Путь | Кто вызывает | Назначение |
 |-------|------|-------------|------------|
-| POST | /api/calib/live | ESP32 | Пуш живого расстояния |
-| GET | /api/calib/live | Mini App | Чтение живого расстояния |
-| POST | /api/calib/command | Mini App | Отправка команды ESP32 |
-| GET | /api/calib/command | ESP32 | Опрос и потребление команды |
-| POST | /api/calib/result | ESP32 | Отправка результата измерения |
-| GET | /api/calib/result | Mini App | Опрос результата |
+| POST | /api/calib/live | ESP32 | Пуш live distance + weight (in-memory) |
+| GET | /api/calib/live | Mini App | Чтение live данных (stale > 5с) |
+| POST | /api/calib/result | ESP32 | Сохранение калибровочной точки (upsert) |
 | GET | /api/calib/table | Оба | Полная таблица калибровки |
-| DELETE | /api/calib/table | Mini App | Сброс калибровки |
+| DELETE | /api/calib/table | Mini App | Сброс калибровки для машины |
 
 ## Common I2C Failure Modes
 

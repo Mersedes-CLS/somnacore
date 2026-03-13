@@ -1,21 +1,22 @@
 # LAZER Backend
 
-Бэкенд для умного тренажёра LAZER — принимает данные о подходах от ESP32, хранит в SQLite, отдаёт статистику.
+Бэкенд для умного тренажёра LAZER — принимает данные о подходах от ESP32, хранит в PostgreSQL, отдаёт статистику.
 
-**Стек:** Node.js, Express, better-sqlite3 (WAL mode)
+**Стек:** Node.js, Express, pg (PostgreSQL pool)
 
 ## Структура файлов
 
 ```
 server/
 ├── index.js            # Точка входа, Express app, подключение роутов
-├── db.js               # Инициализация SQLite, миграции, экспорт db
-├── package.json         # Зависимости (express, better-sqlite3)
-├── lazer.db             # SQLite база данных
+├── db.js               # PostgreSQL pool, миграции, экспорт pool
+├── bot.js              # Telegram bot (grammy, /start → Web App)
+├── package.json         # Зависимости (express, pg, grammy, dotenv)
 └── routes/
     ├── machines.js      # CRUD для тренажёров
     ├── sets.js          # Запись и получение подходов
-    └── stats.js         # Агрегированная статистика
+    ├── stats.js         # Агрегированная статистика
+    └── calibration.js   # Калибровка (/api/calib/*)
 ```
 
 ## Схема БД
@@ -31,15 +32,15 @@ server/
 
 ### sets
 
-| Поле         | Тип      | Описание                              |
-|--------------|----------|---------------------------------------|
-| id           | INTEGER  | PK, AUTOINCREMENT                     |
-| machine_id   | TEXT     | FK → machines(id), nullable           |
-| reps         | INTEGER  | Количество повторений (NOT NULL)      |
-| rom_mm       | INTEGER  | Амплитуда движения в мм (nullable)    |
-| duration_sec | INTEGER  | Длительность подхода в сек (nullable) |
-| weight_kg    | INTEGER  | Вес в кг (nullable, пока не реализовано на ESP32) |
-| timestamp    | DATETIME | DEFAULT CURRENT_TIMESTAMP             |
+| Поле         | Тип         | Описание                              |
+|--------------|-------------|---------------------------------------|
+| id           | SERIAL      | PK                                    |
+| machine_id   | TEXT        | FK → machines(id), nullable           |
+| reps         | INTEGER     | Количество повторений (NOT NULL)      |
+| rom_mm       | INTEGER     | Амплитуда движения в мм (nullable)    |
+| duration_sec | INTEGER     | Длительность подхода в сек (nullable) |
+| weight_kg    | INTEGER     | Вес в кг (nullable)                   |
+| timestamp    | TIMESTAMPTZ | DEFAULT NOW()                         |
 
 ## API Reference
 
@@ -132,8 +133,7 @@ GET /api/stats
 
 **Конфигурация** (`src/config.h`):
 - `MACHINE_ID` — идентификатор тренажёра (`"machine_01"`)
-- `BACKEND_HOST` — IP компьютера с сервером (`"192.168.0.101"`)
-- `BACKEND_PORT` — порт сервера (`3000`)
+- `BACKEND_BASE` — URL бэкенда (`"https://somnacore-production.up.railway.app"`)
 
 **Клиент** (`src/net/api_client.cpp`):
 - Функция `net::sendSet(reps, romMm, durationMs)` — POST на `/api/set`
@@ -153,7 +153,7 @@ npm start          # → http://0.0.0.0:3000
 ## Реализовано
 
 - [x] Express сервер с JSON API
-- [x] SQLite с WAL mode и foreign keys
+- [x] PostgreSQL с connection pooling
 - [x] Таблица machines с CRUD
 - [x] Таблица sets с записью и фильтрацией по machine_id
 - [x] Агрегированная статистика (total, per-day, per-machine)
@@ -164,9 +164,9 @@ npm start          # → http://0.0.0.0:3000
 ## TODO / Roadmap
 
 - [ ] **NFC / пользователи** — таблица users, привязка подходов к пользователю через NFC-браслет
-- [ ] **weight_kg от датчика** — второй VL53L0X определяет позицию штифта → вес в кг
+- [x] **weight_kg от датчика** — калибровка расстояние → вес реализована
 - [ ] **Авторизация** — токены или API-ключи для ESP32 и мобильного приложения
 - [ ] **Фронтенд / мобильное приложение** — UI со статистикой, историей, графиками
-- [ ] **Калибровка веса** — эндпоинт для сохранения маппинга расстояние → вес для каждого тренажёра
-- [ ] **Обновление тренажёра** — PUT /api/machines/:id
+- [x] **Калибровка веса** — эндпоинты /api/calib/* для маппинга расстояние → вес
+- [x] **Обновление тренажёра** — PUT /api/machines/:id
 - [ ] **Пагинация** — для /api/sets при большом объёме данных
