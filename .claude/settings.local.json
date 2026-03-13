@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cd /c/Dev/repos/personal/SomnaCore && pio run 2>&1)",
+      "Bash(cd:*)",
+      "Bash(cd C:/Dev/repos/personal/SomnaCore && pio run 2>&1)"
+    ]
+  }
+}
