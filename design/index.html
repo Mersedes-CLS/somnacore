@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>SomnaCore — App Design v4</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="additions.css">
+</head>
+<body>
+
+  <svg width="0" height="0" style="position:absolute;">
+    <defs>
+      <linearGradient id="ring-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#7c3aed"/>
+        <stop offset="100%" stop-color="#ec4899"/>
+      </linearGradient>
+      <linearGradient id="live-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#7c3aed"/>
+        <stop offset="50%" stop-color="#a855f7"/>
+        <stop offset="100%" stop-color="#ec4899"/>
+      </linearGradient>
+    </defs>
+  </svg>
+
+  <!-- ==================== ONBOARDING ==================== -->
+  <div>
+    <div class="screen-label">Онбординг</div>
+    <div class="phone">
+      <div class="status-bar">
+        <span class="time">9:41</span>
+        <div class="status-icons">📶 🔋</div>
+      </div>
+      <div class="onboarding-content">
+        <div class="onboarding-illustration">💪</div>
+        <div class="onboarding-title">Тренируйся.<br><span>Мы считаем.</span></div>
+        <div class="onboarding-desc">
+          Приложи браслет. Тренируйся. Всё запишется само.
+        </div>
+        <button class="onboarding-btn">Начать</button>
+        <div class="onboarding-secondary">
+          Уже есть аккаунт? <a href="#">Войти</a>
+        </div>
+        <div class="onboarding-dots">
+          <div class="onboarding-dot active"></div>
+          <div class="onboarding-dot"></div>
+          <div class="onboarding-dot"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== NFC ==================== -->
+  <div>
+    <div class="screen-label">Привязка браслета</div>
+    <div class="phone">
+      <div class="status-bar">
+        <span class="time">9:41</span>
+        <div class="status-icons">📶 🔋</div>
+      </div>
+      <div class="onboarding-content">
+        <div class="onboarding-illustration">📡</div>
+        <div class="onboarding-title">Привяжи<br><span>SomnaBand</span></div>
+        <div class="onboarding-desc">
+          Приложи браслет к телефону — это займёт секунду.
+        </div>
+        <button class="onboarding-btn">Сканировать</button>
+        <div class="onboarding-secondary">
+          Нет браслета? <a href="#">Получить в зале</a>
+        </div>
+        <div class="onboarding-dots">
+          <div class="onboarding-dot"></div>
+          <div class="onboarding-dot active"></div>
+          <div class="onboarding-dot"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== DASHBOARD (clean) ==================== -->
+  <div>
+    <div class="screen-label">Главная</div>
+    <div class="phone">
+      <div class="status-bar">
+        <span class="time">9:41</span>
+        <div class="status-icons">📶 🔋</div>
+      </div>
+      <div class="app-content">
+
+        <!-- Greeting — compact -->
+        <div class="greeting-row">
+          <div class="greeting-text">
+            <span class="greeting-hi">Привет 👋</span>
+            <strong>Владимир</strong>
+          </div>
+          <div class="streak-mini">🔥 7</div>
+        </div>
+
+        <!-- Power Score — hero element -->
+        <div class="power-hero">
+          <div class="power-hero-ring">
+            <svg class="ring-svg" viewBox="0 0 100 100" style="width:120px;height:120px;">
+              <circle class="ring-bg" cx="50" cy="50" r="45"/>
+              <circle class="ring-fill" cx="50" cy="50" r="45"/>
+            </svg>
+            <div class="ring-center">
+              <div class="power-hero-value">847</div>
+              <div class="power-hero-label">power</div>
+            </div>
+          </div>
+          <div class="power-hero-stats">
+            <div class="power-hero-change">↑ 34</div>
+            <div class="power-hero-row">
+              <div class="phs"><span>412</span> ккал</div>
+              <div class="phs"><span>8</span> подх.</div>
+              <div class="phs"><span>3.2</span> т</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Streak dots — compact -->
+        <div class="streak-strip">
+          <div class="streak-dot done">П</div>
+          <div class="streak-dot done">В</div>
+          <div class="streak-dot done">С</div>
+          <div class="streak-dot done">Ч</div>
+          <div class="streak-dot done">П</div>
+          <div class="streak-dot done">С</div>
+          <div class="streak-dot today">В</div>
+          <span class="streak-strip-text">3 дня до достижения</span>
+        </div>
+
+        <!-- Your rank — one line -->
+        <div class="rank-bar">
+          <span class="rank-pos">#4</span>
+          <span class="rank-text">в FitZone</span>
+          <span class="rank-gap">42 очка до #3</span>
+          <span class="rank-arrow">→</span>
+        </div>
+
+        <!-- Recent sets -->
+        <div class="section-header" style="margin-top:16px;">
+          <span class="section-title">Сегодня</span>
+          <span class="section-link">Все →</span>
+        </div>
+
+        <div class="set-card">
+          <div class="set-icon grad-accent" style="color:#fff;">🦵</div>
+          <div class="set-info">
+            <div class="set-name">Жим ногами <span class="pr-badge">🏆 PR</span></div>
+            <div class="set-detail">12 × 70 кг</div>
+          </div>
+          <div class="set-right">
+            <div class="set-cal">+58</div>
+          </div>
+        </div>
+
+        <div class="set-card">
+          <div class="set-icon grad-green" style="color:#fff;">💪</div>
+          <div class="set-info">
+            <div class="set-name">Сведение рук</div>
+            <div class="set-detail">10 × 35 кг</div>
+          </div>
+          <div class="set-right">
+            <div class="set-cal">+32</div>
+          </div>
+        </div>
+
+        <div class="set-card">
+          <div class="set-icon grad-orange" style="color:#fff;">🏋</div>
+          <div class="set-info">
+            <div class="set-name">Тяга верхнего блока</div>
+            <div class="set-detail">8 × 50 кг</div>
+          </div>
+          <div class="set-right">
+            <div class="set-cal">+44</div>
+          </div>
+        </div>
+
+        <!-- Motivation — short -->
+        <div class="motivation-mini">
+          📈 На <strong>23% сильнее</strong> чем месяц назад
+        </div>
+
+      </div>
+
+      <div class="nav-bar">
+        <div class="nav-item active"><div class="nav-icon">🏠</div>Главная<div class="nav-dot"></div></div>
+        <div class="nav-item"><div class="nav-icon">⚡</div>Live</div>
+        <div class="nav-item"><div class="nav-icon">📅</div>История</div>
+        <div class="nav-item"><div class="nav-icon">📊</div>Стата</div>
+        <div class="nav-item"><div class="nav-icon">👤</div>Профиль</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== LIVE WORKOUT (clean) ==================== -->
+  <div>
+    <div class="screen-label">Тренировка (live)</div>
+    <div class="phone">
+      <div class="status-bar">
+        <span class="time">9:41</span>
+        <div class="status-icons">📶 🔋</div>
+      </div>
+      <div class="app-content">
+
+        <div class="live-header">
+          <div class="live-status">
+            <div class="live-pulse"></div>
+            Идёт подход
+          </div>
+          <div class="live-machine-name" style="margin-top:10px;">Жим ногами</div>
+        </div>
+
+        <div class="live-ring-container">
+          <div class="live-ring">
+            <svg class="live-ring-svg" viewBox="0 0 200 200">
+              <circle class="live-ring-bg" cx="100" cy="100" r="90"/>
+              <circle class="live-ring-progress" cx="100" cy="100" r="90"/>
+            </svg>
+            <div class="live-ring-center">
+              <div class="live-reps">8</div>
+              <div class="live-reps-label">из 12</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stats — just numbers, minimal labels -->
+        <div class="live-nums">
+          <div class="live-num">
+            <div class="live-num-val">70</div>
+            <div class="live-num-unit">кг</div>
+          </div>
+          <div class="live-num-divider"></div>
+          <div class="live-num">
+            <div class="live-num-val">320</div>
+            <div class="live-num-unit">мм ROM</div>
+          </div>
+          <div class="live-num-divider"></div>
+          <div class="live-num">
+            <div class="live-num-val">48</div>
+            <div class="live-num-unit">ккал</div>
+          </div>
+        </div>
+
+        <!-- Comparison — short -->
+        <div class="live-compare">
+          Прошлый раз: 65 кг × 10 · <strong>+5 кг!</strong>
+        </div>
+
+        <!-- Timeline — compact -->
+        <div class="timeline-compact">
+          <div class="tc-item active">
+            <div class="tc-num">3</div>
+            <div class="tc-text">8 × 70 кг</div>
+            <div class="tc-cal">48</div>
+          </div>
+          <div class="tc-rest">отдых 1:45</div>
+          <div class="tc-item">
+            <div class="tc-num">2</div>
+            <div class="tc-text">10 × 65 кг</div>
+            <div class="tc-cal">56</div>
+          </div>
+          <div class="tc-rest">отдых 2:10</div>
+          <div class="tc-item">
+            <div class="tc-num">1</div>
+            <div class="tc-text">12 × 60 кг</div>
+            <div class="tc-cal">62</div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="nav-bar">
+        <div class="nav-item"><div class="nav-icon">🏠</div>Главная</div>
+        <div class="nav-item active"><div class="nav-icon">⚡</div>Live<div class="nav-dot"></div></div>
+        <div class="nav-item"><div class="nav-icon">📅</div>История</div>
+        <div class="nav-item"><div class="nav-icon">📊</div>Стата</div>
+        <div class="nav-item"><div class="nav-icon">👤</div>Профиль</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== HISTORY ==================== -->
+  <div>
+    <div class="screen-label">История</div>
+    <div class="phone">
+      <div class="status-bar">
+        <span class="time">9:41</span>
+        <div class="status-icons">📶 🔋</div>
+      </div>
+      <div class="app-content">
+
+        <div class="greeting"><strong>История</strong></div>
+
+        <div class="filter-row">
+          <div class="filter-chip active">Все</div>
+          <div class="filter-chip">🦵 Ноги</div>
+          <div class="filter-chip">💪 Руки</div>
+          <div class="filter-chip">🏋 Спина</div>
+        </div>
+
+        <div class="calendar-strip">
+          <div class="cal-day empty"><div class="cal-day-name">Пн</div><div class="cal-day-num">10</div><div class="cal-day-dot"></div></div>
+          <div class="cal-day"><div class="cal-day-name">Вт</div><div class="cal-day-num">11</div><div class="cal-day-dot"></div></div>
+          <div class="cal-day"><div class="cal-day-name">Ср</div><div class="cal-day-num">12</div><div class="cal-day-dot"></div></div>
+          <div class="cal-day empty"><div class="cal-day-name">Чт</div><div class="cal-day-num">13</div><div class="cal-day-dot"></div></div>
+          <div class="cal-day"><div class="cal-day-name">Пт</div><div class="cal-day-num">14</div><div class="cal-day-dot"></div></div>
+          <div class="cal-day"><div class="cal-day-name">Сб</div><div class="cal-day-num">15</div><div class="cal-day-dot"></div></div>
+          <div class="cal-day active"><div class="cal-day-name">Вс</div><div class="cal-day-num">16</div><div class="cal-day-dot"></div></div>
+        </div>
+
+        <!-- Day summary — one line -->
+        <div class="day-summary-line">
+          <span>🔥 412 ккал</span>
+          <span>8 подх.</span>
+          <span>3.2 т</span>
+          <span>42 мин</span>
+        </div>
+
+        <div class="history-card">
+          <div class="history-icon">🦵</div>
+          <div class="history-info">
+            <div class="history-name">Жим ногами <span class="pr-badge">🏆 PR</span></div>
+            <div class="history-meta"><span>3 × 12-8</span><span>60-70 кг</span></div>
+          </div>
+          <div class="history-right"><div class="history-cal">166</div></div>
+        </div>
+
+        <div class="history-card">
+          <div class="history-icon">💪</div>
+          <div class="history-info">
+            <div class="history-name">Сведение рук</div>
+            <div class="history-meta"><span>3 × 10</span><span>35 кг</span></div>
+          </div>
+          <div class="history-right"><div class="history-cal">96</div></div>
+        </div>
+
+        <div class="history-card">
+          <div class="history-icon">🏋</div>
+          <div class="history-info">
+            <div class="history-name">Тяга верхнего блока</div>
+            <div class="history-meta"><span>2 × 8</span><span>50 кг</span></div>
+          </div>
+          <div class="history-right"><div class="history-cal">88</div></div>
+        </div>
+
+        <div class="history-card">
+          <div class="history-icon">🦿</div>
+          <div class="history-info">
+            <div class="history-name">Разгибание ног</div>
+            <div class="history-meta"><span>3 × 15</span><span>30 кг</span></div>
+          </div>
+          <div class="history-right"><div class="history-cal">62</div></div>
+        </div>
+
+        <div class="motivation-mini">
+          💬 Тоннаж <strong>+340 кг</strong> к прошлому воскресенью
+        </div>
+
+      </div>
+
+      <div class="nav-bar">
+        <div class="nav-item"><div class="nav-icon">🏠</div>Главная</div>
+        <div class="nav-item"><div class="nav-icon">⚡</div>Live</div>
+        <div class="nav-item active"><div class="nav-icon">📅</div>История<div class="nav-dot"></div></div>
+        <div class="nav-item"><div class="nav-icon">📊</div>Стата</div>
+        <div class="nav-item"><div class="nav-icon">👤</div>Профиль</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== STATS ==================== -->
+  <div>
+    <div class="screen-label">Статистика</div>
+    <div class="phone">
+      <div class="status-bar">
+        <span class="time">9:41</span>
+        <div class="status-icons">📶 🔋</div>
+      </div>
+      <div class="app-content">
+
+        <div class="greeting"><strong>Статистика</strong></div>
+
+        <div class="stats-period">
+          <button class="period-btn active">Неделя</button>
+          <button class="period-btn">Месяц</button>
+          <button class="period-btn">3 мес</button>
+          <button class="period-btn">Всё</button>
+        </div>
+
+        <div class="chart-card">
+          <div class="chart-header">
+            <div>
+              <div class="chart-title">Калории</div>
+              <div class="chart-value">3,284</div>
+            </div>
+            <div class="chart-change up">↑ 18%</div>
+          </div>
+          <div class="chart-bars">
+            <div class="chart-bar-group"><div class="chart-bar" style="height:50px;"></div><div class="chart-day">П</div></div>
+            <div class="chart-bar-group"><div class="chart-bar" style="height:85px;"></div><div class="chart-day">В</div></div>
+            <div class="chart-bar-group"><div class="chart-bar secondary" style="height:12px;"></div><div class="chart-day">С</div></div>
+            <div class="chart-bar-group"><div class="chart-bar" style="height:100px;"></div><div class="chart-day">Ч</div></div>
+            <div class="chart-bar-group"><div class="chart-bar" style="height:65px;"></div><div class="chart-day">П</div></div>
+            <div class="chart-bar-group"><div class="chart-bar" style="height:110px;"></div><div class="chart-day">С</div></div>
+            <div class="chart-bar-group"><div class="chart-bar today-bar" style="height:55px;"></div><div class="chart-day" style="color:var(--accent-light);">В</div></div>
+          </div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-card-value">14.8т</div>
+            <div class="stat-card-label">тоннаж</div>
+            <div class="stat-card-change up">↑ 23%</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-value">48</div>
+            <div class="stat-card-label">подходов</div>
+            <div class="stat-card-change up">↑ 12%</div>
+          </div>
+        </div>
+
+        <div class="section-header">
+          <span class="section-title">Рекорды</span>
+        </div>
+
+        <div class="pr-card">
+          <div class="pr-trophy">🏆</div>
+          <div class="pr-info">
+            <div class="pr-title">Жим ногами</div>
+            <div class="pr-desc">макс. вес · сегодня</div>
+          </div>
+          <div class="pr-value">70 кг</div>
+        </div>
+
+        <div class="pr-card">
+          <div class="pr-trophy">🥇</div>
+          <div class="pr-info">
+            <div class="pr-title">Тяга верхнего блока</div>
+            <div class="pr-desc">макс. повт. · вчера</div>
+          </div>
+          <div class="pr-value">15</div>
+        </div>
+
+      </div>
+
+      <div class="nav-bar">
+        <div class="nav-item"><div class="nav-icon">🏠</div>Главная</div>
+        <div class="nav-item"><div class="nav-icon">⚡</div>Live</div>
+        <div class="nav-item"><div class="nav-icon">📅</div>История</div>
+        <div class="nav-item active"><div class="nav-icon">📊</div>Стата<div class="nav-dot"></div></div>
+        <div class="nav-item"><div class="nav-icon">👤</div>Профиль</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== PROFILE ==================== -->
+  <div>
+    <div class="screen-label">Профиль</div>
+    <div class="phone">
+      <div class="status-bar">
+        <span class="time">9:41</span>
+        <div class="status-icons">📶 🔋</div>
+      </div>
+      <div class="app-content">
+
+        <div class="profile-header">
+          <div class="profile-avatar">
+            В
+            <div class="profile-level-badge">12</div>
+          </div>
+          <div class="profile-name">Владимир</div>
+          <div class="profile-sub">🔥 7 дней · #4 в FitZone</div>
+          <div class="profile-stats">
+            <div class="profile-stat">
+              <div class="profile-stat-val">47</div>
+              <div class="profile-stat-label">тренировок</div>
+            </div>
+            <div class="profile-stat">
+              <div class="profile-stat-val">21.4к</div>
+              <div class="profile-stat-label">ккал</div>
+            </div>
+            <div class="profile-stat">
+              <div class="profile-stat-val">38ч</div>
+              <div class="profile-stat-label">в зале</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- XP here, not on dashboard -->
+        <div class="xp-bar" style="margin-top:12px;">
+          <div class="xp-level">12</div>
+          <div class="xp-info">
+            <div class="xp-label">Атлет · до 13 ур.</div>
+            <div class="xp-track"><div class="xp-progress"></div></div>
+          </div>
+          <div class="xp-text">1,840 / 2,800</div>
+        </div>
+
+        <div class="section-header">
+          <span class="section-title">Достижения</span>
+          <span class="section-link">8 / 24 →</span>
+        </div>
+
+        <div class="achievements-row">
+          <div class="achievement unlocked"><div class="achievement-icon">🔥</div><div class="achievement-name">7 дней</div></div>
+          <div class="achievement unlocked"><div class="achievement-icon">🏆</div><div class="achievement-name">Первый PR</div></div>
+          <div class="achievement unlocked"><div class="achievement-icon">💪</div><div class="achievement-name">1000 повт</div></div>
+          <div class="achievement unlocked"><div class="achievement-icon">⚡</div><div class="achievement-name">5000 ккал</div></div>
+          <div class="achievement locked"><div class="achievement-icon">🌟</div><div class="achievement-name">30 дней</div></div>
+          <div class="achievement locked"><div class="achievement-icon">👑</div><div class="achievement-name">Топ-3</div></div>
+        </div>
+
+        <div class="nfc-card">
+          <div class="nfc-icon">📡</div>
+          <div class="nfc-info">
+            <div class="nfc-title">SomnaBand</div>
+            <div class="nfc-sub">#00A3F2</div>
+          </div>
+          <div class="nfc-status"><div class="nfc-status-dot"></div>Ок</div>
+        </div>
+
+        <div class="settings-group">
+          <div class="settings-label">Настройки</div>
+          <div class="settings-item">
+            <div class="settings-icon">🎯</div>
+            <div class="settings-text">Цель</div>
+            <div class="settings-value">600 ккал</div>
+            <div class="settings-arrow">›</div>
+          </div>
+          <div class="settings-item">
+            <div class="settings-icon">⚖️</div>
+            <div class="settings-text">Вес</div>
+            <div class="settings-value">78 кг</div>
+            <div class="settings-arrow">›</div>
+          </div>
+          <div class="settings-item">
+            <div class="settings-icon">🔔</div>
+            <div class="settings-text">Напоминание</div>
+            <div class="toggle"></div>
+          </div>
+          <div class="settings-item">
+            <div class="settings-icon">🏢</div>
+            <div class="settings-text">FitZone</div>
+            <div class="settings-value">12 тренаж.</div>
+            <div class="settings-arrow">›</div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="nav-bar">
+        <div class="nav-item"><div class="nav-icon">🏠</div>Главная</div>
+        <div class="nav-item"><div class="nav-icon">⚡</div>Live</div>
+        <div class="nav-item"><div class="nav-icon">📅</div>История</div>
+        <div class="nav-item"><div class="nav-icon">📊</div>Стата</div>
+        <div class="nav-item active"><div class="nav-icon">👤</div>Профиль<div class="nav-dot"></div></div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
