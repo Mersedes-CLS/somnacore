@@ -1,5 +1,56 @@
 /* ========= V4 — CLEAN & MINIMAL ADDITIONS ========= */
 
+/* ========= NFC SUCCESS ========= */
+.nfc-success-check {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--green), #34d399);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  color: #fff;
+  margin: 0 auto 24px;
+  animation: badge-unlock 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 0 30px rgba(16, 185, 129, 0.4);
+}
+
+.nfc-success-band {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-card);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  border-radius: var(--radius-md);
+  padding: 14px 18px;
+  margin: 20px 0 28px;
+}
+
+.nfc-band-id {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.nfc-band-status {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--green);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.nfc-band-status::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--green);
+  animation: pulse-green 1.5s ease infinite;
+}
+
 /* ========= GREETING ROW (compact) ========= */
 .greeting-row {
   display: flex;

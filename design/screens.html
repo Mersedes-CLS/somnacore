@@ -24,6 +24,90 @@
     </defs>
   </svg>
 
+  <!-- ==================== 0. LIVE WORKOUT ==================== -->
+  <div>
+    <div class="screen-label">Тренировка (live)</div>
+    <div class="phone">
+      <div class="status-bar">
+        <span class="time">9:41</span>
+        <div class="status-icons">📶 🔋</div>
+      </div>
+      <div class="app-content">
+
+        <div class="live-header">
+          <div class="live-status">
+            <div class="live-pulse"></div>
+            Идёт подход
+          </div>
+          <div class="live-machine-name" style="margin-top:10px;">Жим ногами</div>
+        </div>
+
+        <div class="live-ring-container">
+          <div class="live-ring">
+            <svg class="live-ring-svg" viewBox="0 0 200 200">
+              <circle class="live-ring-bg" cx="100" cy="100" r="90"/>
+              <circle class="live-ring-progress" cx="100" cy="100" r="90"/>
+            </svg>
+            <div class="live-ring-center">
+              <div class="live-reps">8</div>
+              <div class="live-reps-label">из 12</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="live-nums">
+          <div class="live-num">
+            <div class="live-num-val">70</div>
+            <div class="live-num-unit">кг</div>
+          </div>
+          <div class="live-num-divider"></div>
+          <div class="live-num">
+            <div class="live-num-val">320</div>
+            <div class="live-num-unit">мм ROM</div>
+          </div>
+          <div class="live-num-divider"></div>
+          <div class="live-num">
+            <div class="live-num-val">48</div>
+            <div class="live-num-unit">ккал</div>
+          </div>
+        </div>
+
+        <div class="live-compare">
+          Прошлый раз: 65 кг × 10 · <strong>+5 кг!</strong>
+        </div>
+
+        <div class="timeline-compact">
+          <div class="tc-item active">
+            <div class="tc-num">3</div>
+            <div class="tc-text">8 × 70 кг</div>
+            <div class="tc-cal">48</div>
+          </div>
+          <div class="tc-rest">отдых 1:45</div>
+          <div class="tc-item">
+            <div class="tc-num">2</div>
+            <div class="tc-text">10 × 65 кг</div>
+            <div class="tc-cal">56</div>
+          </div>
+          <div class="tc-rest">отдых 2:10</div>
+          <div class="tc-item">
+            <div class="tc-num">1</div>
+            <div class="tc-text">12 × 60 кг</div>
+            <div class="tc-cal">62</div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="nav-bar">
+        <div class="nav-item"><div class="nav-icon">🏠</div>Главная</div>
+        <div class="nav-item active"><div class="nav-icon">⚡</div>Live<div class="nav-dot"></div></div>
+        <div class="nav-item"><div class="nav-icon">📅</div>История</div>
+        <div class="nav-item"><div class="nav-icon">📊</div>Стата</div>
+        <div class="nav-item"><div class="nav-icon">👤</div>Профиль</div>
+      </div>
+    </div>
+  </div>
+
   <!-- ==================== 1. MACHINE DETAIL ==================== -->
   <div>
     <div class="screen-label">Экран тренажёра</div>
@@ -38,128 +122,100 @@
           <div class="machine-back">←</div>
           <div class="machine-title-block">
             <div class="machine-title">Жим ногами</div>
-            <div class="machine-subtitle">Тренажёр #3 · Ноги</div>
+            <div class="machine-subtitle">#3 · Ноги</div>
           </div>
           <div style="font-size:28px;">🦵</div>
         </div>
 
-        <!-- Personal Best -->
+        <!-- Personal Best — compact one-line records -->
         <div class="machine-best-card">
           <div class="machine-best-icon">🏆</div>
           <div class="machine-best-records">
             <div class="machine-best-item">
               <div class="machine-best-value">70 кг</div>
-              <div class="machine-best-label">Макс. вес</div>
+              <div class="machine-best-label">макс</div>
             </div>
             <div class="machine-best-item">
               <div class="machine-best-value">15</div>
-              <div class="machine-best-label">Макс. повт.</div>
+              <div class="machine-best-label">повт</div>
             </div>
             <div class="machine-best-item">
               <div class="machine-best-value">2.1т</div>
-              <div class="machine-best-label">Макс. тоннаж</div>
+              <div class="machine-best-label">тоннаж</div>
             </div>
           </div>
         </div>
 
         <!-- Weight Progress Chart -->
         <div class="machine-progress">
-          <div class="machine-progress-title">Прогресс веса</div>
+          <div class="machine-progress-title">Прогресс</div>
           <div class="machine-progress-chart">
             <div class="machine-bar-group">
               <div class="machine-bar-kg">45</div>
               <div class="machine-bar" style="height:25px;"></div>
-              <div class="machine-bar-label">3/01</div>
+              <div class="machine-bar-label">01</div>
             </div>
             <div class="machine-bar-group">
               <div class="machine-bar-kg">50</div>
               <div class="machine-bar" style="height:32px;"></div>
-              <div class="machine-bar-label">3/04</div>
-            </div>
-            <div class="machine-bar-group">
-              <div class="machine-bar-kg">50</div>
-              <div class="machine-bar" style="height:32px;"></div>
-              <div class="machine-bar-label">3/06</div>
+              <div class="machine-bar-label">04</div>
             </div>
             <div class="machine-bar-group">
               <div class="machine-bar-kg">55</div>
               <div class="machine-bar" style="height:40px;"></div>
-              <div class="machine-bar-label">3/08</div>
+              <div class="machine-bar-label">08</div>
             </div>
             <div class="machine-bar-group">
               <div class="machine-bar-kg">60</div>
               <div class="machine-bar" style="height:50px;"></div>
-              <div class="machine-bar-label">3/10</div>
-            </div>
-            <div class="machine-bar-group">
-              <div class="machine-bar-kg">60</div>
-              <div class="machine-bar" style="height:50px;"></div>
-              <div class="machine-bar-label">3/12</div>
+              <div class="machine-bar-label">10</div>
             </div>
             <div class="machine-bar-group">
               <div class="machine-bar-kg">65</div>
               <div class="machine-bar" style="height:58px;"></div>
-              <div class="machine-bar-label">3/14</div>
+              <div class="machine-bar-label">14</div>
             </div>
             <div class="machine-bar-group">
               <div class="machine-bar-kg">70</div>
               <div class="machine-bar latest" style="height:68px;"></div>
-              <div class="machine-bar-label">3/16</div>
+              <div class="machine-bar-label">16</div>
             </div>
           </div>
         </div>
 
-        <!-- History -->
+        <!-- History — compact -->
         <div class="machine-history-header">
-          <div class="machine-history-title">Последние подходы</div>
+          <div class="machine-history-title">Подходы</div>
         </div>
 
         <div class="machine-set">
           <div class="machine-set-date">Сегодня</div>
-          <div class="machine-set-reps">12 × 70 кг <span class="pr-badge">🏆 PR</span></div>
-          <div class="machine-set-cal">58 ккал</div>
+          <div class="machine-set-reps">12 × 70 кг <span class="pr-badge">🏆</span></div>
+          <div class="machine-set-cal">58</div>
         </div>
         <div class="machine-set">
           <div class="machine-set-date">Сегодня</div>
           <div class="machine-set-reps">10 × 65 кг</div>
-          <div class="machine-set-cal">56 ккал</div>
+          <div class="machine-set-cal">56</div>
         </div>
         <div class="machine-set">
           <div class="machine-set-date">Сегодня</div>
           <div class="machine-set-reps">12 × 60 кг</div>
-          <div class="machine-set-cal">62 ккал</div>
+          <div class="machine-set-cal">62</div>
         </div>
         <div class="machine-set">
           <div class="machine-set-date">Вчера</div>
           <div class="machine-set-reps">12 × 65 кг</div>
-          <div class="machine-set-cal">67 ккал</div>
+          <div class="machine-set-cal">67</div>
         </div>
         <div class="machine-set">
           <div class="machine-set-date">Вчера</div>
           <div class="machine-set-reps">10 × 60 кг</div>
-          <div class="machine-set-cal">52 ккал</div>
-        </div>
-        <div class="machine-set">
-          <div class="machine-set-date">Вчера</div>
-          <div class="machine-set-reps">12 × 55 кг</div>
-          <div class="machine-set-cal">57 ккал</div>
-        </div>
-        <div class="machine-set">
-          <div class="machine-set-date">14 мар</div>
-          <div class="machine-set-reps">10 × 60 кг</div>
-          <div class="machine-set-cal">52 ккал</div>
-        </div>
-        <div class="machine-set">
-          <div class="machine-set-date">14 мар</div>
-          <div class="machine-set-reps">12 × 55 кг</div>
-          <div class="machine-set-cal">57 ккал</div>
+          <div class="machine-set-cal">52</div>
         </div>
 
-        <!-- Motivation -->
-        <div class="motivation-card">
-          <div class="motivation-emoji">📈</div>
-          <div class="motivation-text">Вес вырос на <strong>+25 кг за 2 недели</strong>. Отличная динамика!</div>
-        </div>
+        <!-- Motivation — one-liner -->
+        <div class="motivation-mini">📈 <strong>+25 кг</strong> за 2 недели</div>
 
       </div>
 
@@ -186,68 +242,62 @@
 
           <div class="summary-emoji">🎉</div>
           <div class="summary-title">Отличная тренировка!</div>
-          <div class="summary-subtitle">42 минуты · 4 тренажёра</div>
+          <div class="summary-subtitle">42 мин · 4 тренажёра</div>
 
           <div class="summary-stats">
             <div class="summary-stat">
-              <div class="summary-stat-icon">🔥</div>
               <div class="summary-stat-value">412</div>
               <div class="summary-stat-label">ккал</div>
             </div>
             <div class="summary-stat">
-              <div class="summary-stat-icon">🏋</div>
               <div class="summary-stat-value">8</div>
               <div class="summary-stat-label">подходов</div>
             </div>
             <div class="summary-stat">
-              <div class="summary-stat-icon">💪</div>
               <div class="summary-stat-value">72</div>
-              <div class="summary-stat-label">повторений</div>
+              <div class="summary-stat-label">повт</div>
             </div>
             <div class="summary-stat">
-              <div class="summary-stat-icon">⚡</div>
               <div class="summary-stat-value">3.2т</div>
               <div class="summary-stat-label">тоннаж</div>
             </div>
           </div>
 
-          <!-- XP Earned -->
+          <!-- XP compact -->
           <div class="summary-xp-earned">
             <div class="summary-xp-icon">⭐</div>
             <div class="summary-xp-info">
-              <div class="summary-xp-title">Опыт заработан!</div>
-              <div class="summary-xp-detail">До уровня 13 осталось 560 XP</div>
+              <div class="summary-xp-title">+240 XP</div>
+              <div class="summary-xp-detail">До ур. 13 — 560 XP</div>
             </div>
-            <div class="summary-xp-value">+240</div>
           </div>
 
-          <!-- PRs -->
+          <!-- PR -->
           <div class="summary-pr-list">
             <div class="summary-pr">
               <div class="summary-pr-emoji">🏆</div>
-              <div class="summary-pr-text">Жим ногами · макс. вес</div>
+              <div class="summary-pr-text">Жим ногами</div>
               <div class="summary-pr-val">70 кг</div>
             </div>
           </div>
 
-          <!-- Streak -->
+          <!-- Streak compact -->
           <div class="summary-streak">
             <div class="summary-streak-fire">🔥</div>
             <div class="summary-streak-text">
               <div class="summary-streak-count">8 дней подряд!</div>
-              <div class="summary-streak-label">+1 к стрику. Ещё 2 дня до достижения!</div>
             </div>
           </div>
 
           <button class="summary-btn">Готово</button>
-          <div class="summary-share"><a href="#">Поделиться результатом →</a></div>
+          <div class="summary-share"><a href="#">Поделиться →</a></div>
 
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ==================== 3. FULL ACHIEVEMENTS ==================== -->
+  <!-- ==================== 3. ACHIEVEMENTS ==================== -->
   <div>
     <div class="screen-label">Достижения</div>
     <div class="phone">
@@ -263,10 +313,10 @@
         </div>
 
         <div style="padding:10px 20px 0;">
-          <div class="xp-bar" style="margin:0 0 0;">
+          <div class="xp-bar" style="margin:0;">
             <div class="xp-level">12</div>
             <div class="xp-info">
-              <div class="xp-label">Уровень 12 · Атлет</div>
+              <div class="xp-label">Ур. 12 · Атлет</div>
               <div class="xp-track"><div class="xp-progress"></div></div>
             </div>
             <div class="xp-text">1,840 / 2,800</div>
@@ -279,35 +329,29 @@
           <div class="achievement-full unlocked">
             <div class="achievement-full-icon">🔥</div>
             <div class="achievement-full-name">3 дня</div>
-            <div class="achievement-full-desc">Стрик 3 дня подряд</div>
           </div>
           <div class="achievement-full unlocked">
             <div class="achievement-full-icon">🔥</div>
             <div class="achievement-full-name">7 дней</div>
-            <div class="achievement-full-desc">Стрик 7 дней подряд</div>
           </div>
           <div class="achievement-full locked">
             <div class="achievement-full-icon">🔥</div>
             <div class="achievement-full-name">30 дней</div>
-            <div class="achievement-full-desc">Стрик 30 дней подряд</div>
             <div class="achievement-full-progress">
               <div class="achievement-full-bar" style="width:26%;"></div>
             </div>
           </div>
           <div class="achievement-full unlocked">
             <div class="achievement-full-icon">📅</div>
-            <div class="achievement-full-name">Новичок</div>
-            <div class="achievement-full-desc">10 тренировок</div>
+            <div class="achievement-full-name">10 тренировок</div>
           </div>
           <div class="achievement-full unlocked">
             <div class="achievement-full-icon">💎</div>
-            <div class="achievement-full-name">Завсегдатай</div>
-            <div class="achievement-full-desc">30 тренировок</div>
+            <div class="achievement-full-name">30 тренировок</div>
           </div>
           <div class="achievement-full locked">
             <div class="achievement-full-icon">👑</div>
-            <div class="achievement-full-name">Легенда</div>
-            <div class="achievement-full-desc">100 тренировок</div>
+            <div class="achievement-full-name">100 тренировок</div>
             <div class="achievement-full-progress">
               <div class="achievement-full-bar" style="width:47%;"></div>
             </div>
@@ -320,17 +364,14 @@
           <div class="achievement-full unlocked">
             <div class="achievement-full-icon">🏆</div>
             <div class="achievement-full-name">Первый PR</div>
-            <div class="achievement-full-desc">Побей свой рекорд</div>
           </div>
           <div class="achievement-full unlocked">
             <div class="achievement-full-icon">🏋</div>
-            <div class="achievement-full-name">1000 повт.</div>
-            <div class="achievement-full-desc">Всего повторений</div>
+            <div class="achievement-full-name">1000 повт</div>
           </div>
           <div class="achievement-full locked">
             <div class="achievement-full-icon">⚡</div>
             <div class="achievement-full-name">100 тонн</div>
-            <div class="achievement-full-desc">Подними 100 тонн всего</div>
             <div class="achievement-full-progress">
               <div class="achievement-full-bar" style="width:62%;"></div>
             </div>
@@ -343,17 +384,14 @@
           <div class="achievement-full unlocked">
             <div class="achievement-full-icon">🔥</div>
             <div class="achievement-full-name">1000 ккал</div>
-            <div class="achievement-full-desc">Сожги 1000 ккал</div>
           </div>
           <div class="achievement-full unlocked">
             <div class="achievement-full-icon">⚡</div>
             <div class="achievement-full-name">5000 ккал</div>
-            <div class="achievement-full-desc">Сожги 5000 ккал</div>
           </div>
           <div class="achievement-full locked">
             <div class="achievement-full-icon">🌟</div>
             <div class="achievement-full-name">50 000 ккал</div>
-            <div class="achievement-full-desc">Сожги 50 000 ккал</div>
             <div class="achievement-full-progress">
               <div class="achievement-full-bar" style="width:43%;"></div>
             </div>
@@ -366,17 +404,14 @@
           <div class="achievement-full locked">
             <div class="achievement-full-icon">🥉</div>
             <div class="achievement-full-name">Топ-3</div>
-            <div class="achievement-full-desc">Войди в топ-3 зала</div>
           </div>
           <div class="achievement-full locked">
             <div class="achievement-full-icon">🥇</div>
-            <div class="achievement-full-name">Лидер</div>
-            <div class="achievement-full-desc">Стань #1 в зале</div>
+            <div class="achievement-full-name">Лидер #1</div>
           </div>
           <div class="achievement-full locked">
             <div class="achievement-full-icon">🌍</div>
-            <div class="achievement-full-name">Глобал</div>
-            <div class="achievement-full-desc">Топ-100 во всех залах</div>
+            <div class="achievement-full-name">Топ-100 глобал</div>
           </div>
         </div>
 
@@ -392,7 +427,7 @@
     </div>
   </div>
 
-  <!-- ==================== 4. EMPTY STATE (new user) ==================== -->
+  <!-- ==================== 4. EMPTY STATE ==================== -->
   <div>
     <div class="screen-label">Пустое состояние</div>
     <div class="phone">
@@ -402,15 +437,12 @@
       </div>
       <div class="app-content">
 
-        <div class="greeting">
-          Привет 👋
-          <strong>Владимир</strong>
-        </div>
+        <div class="greeting-row">👋 <strong>Владимир</strong></div>
 
         <div class="empty-state">
           <div class="empty-illustration">🏋️</div>
-          <div class="empty-title">Первая тренировка ждёт!</div>
-          <div class="empty-desc">Приложи SomnaBand к любому тренажёру — и мы начнём считать. Никаких кнопок, просто тренируйся.</div>
+          <div class="empty-title">Приложи SomnaBand к тренажёру</div>
+          <div class="empty-desc">Мы всё посчитаем автоматически</div>
           <button class="empty-btn">Как это работает?</button>
         </div>
 
@@ -426,7 +458,7 @@
     </div>
   </div>
 
-  <!-- ==================== 5. HISTORY WITH FILTERS ==================== -->
+  <!-- ==================== 5. HISTORY + FILTERS ==================== -->
   <div>
     <div class="screen-label">История + фильтры</div>
     <div class="phone">
@@ -436,44 +468,41 @@
       </div>
       <div class="app-content">
 
-        <div class="greeting"><strong>История</strong></div>
+        <div class="greeting-row"><strong>История</strong></div>
 
-        <!-- Filters -->
         <div class="filter-row">
           <div class="filter-chip active">Все</div>
           <div class="filter-chip">🦵 Ноги</div>
           <div class="filter-chip">💪 Руки</div>
           <div class="filter-chip">🏋 Спина</div>
           <div class="filter-chip">🫁 Грудь</div>
-          <div class="filter-chip">🔍 Поиск</div>
         </div>
 
         <div class="calendar-strip">
-          <div class="cal-day empty"><div class="cal-day-name">Пн</div><div class="cal-day-num">10</div><div class="cal-day-dot"></div></div>
-          <div class="cal-day"><div class="cal-day-name">Вт</div><div class="cal-day-num">11</div><div class="cal-day-dot"></div></div>
-          <div class="cal-day"><div class="cal-day-name">Ср</div><div class="cal-day-num">12</div><div class="cal-day-dot"></div></div>
-          <div class="cal-day empty"><div class="cal-day-name">Чт</div><div class="cal-day-num">13</div><div class="cal-day-dot"></div></div>
-          <div class="cal-day"><div class="cal-day-name">Пт</div><div class="cal-day-num">14</div><div class="cal-day-dot"></div></div>
-          <div class="cal-day"><div class="cal-day-name">Сб</div><div class="cal-day-num">15</div><div class="cal-day-dot"></div></div>
-          <div class="cal-day active"><div class="cal-day-name">Вс</div><div class="cal-day-num">16</div><div class="cal-day-dot"></div></div>
+          <div class="cal-day empty"><div class="cal-day-name">Пн</div><div class="cal-day-num">10</div></div>
+          <div class="cal-day"><div class="cal-day-name">Вт</div><div class="cal-day-num">11</div></div>
+          <div class="cal-day"><div class="cal-day-name">Ср</div><div class="cal-day-num">12</div></div>
+          <div class="cal-day empty"><div class="cal-day-name">Чт</div><div class="cal-day-num">13</div></div>
+          <div class="cal-day"><div class="cal-day-name">Пт</div><div class="cal-day-num">14</div></div>
+          <div class="cal-day"><div class="cal-day-name">Сб</div><div class="cal-day-num">15</div></div>
+          <div class="cal-day active"><div class="cal-day-name">Вс</div><div class="cal-day-num">16</div></div>
         </div>
 
-        <div class="day-summary">
-          <div class="day-summary-item"><div class="day-summary-value">412</div><div class="day-summary-label">ккал</div></div>
-          <div class="day-summary-item"><div class="day-summary-value">8</div><div class="day-summary-label">подходов</div></div>
-          <div class="day-summary-item"><div class="day-summary-value">72</div><div class="day-summary-label">повторений</div></div>
-          <div class="day-summary-item"><div class="day-summary-value">3.2т</div><div class="day-summary-label">тоннаж</div></div>
+        <!-- Day summary — compact inline -->
+        <div class="day-summary-line">
+          <span><strong>412</strong> ккал</span>
+          <span><strong>8</strong> подх</span>
+          <span><strong>72</strong> повт</span>
+          <span><strong>3.2т</strong></span>
         </div>
-
-        <div class="section-header"><span class="section-title">Тренировки</span></div>
 
         <div class="history-card">
           <div class="history-icon">🦵</div>
           <div class="history-info">
-            <div class="history-name">Жим ногами <span class="pr-badge">🏆 PR</span></div>
+            <div class="history-name">Жим ногами <span class="pr-badge">🏆</span></div>
             <div class="history-meta"><span>3 × 12-8</span><span>60-70 кг</span></div>
           </div>
-          <div class="history-right"><div class="history-cal">166</div><div class="history-cal-label">ккал</div></div>
+          <div class="history-right"><div class="history-cal">166</div></div>
         </div>
 
         <div class="history-card">
@@ -482,16 +511,16 @@
             <div class="history-name">Сведение рук</div>
             <div class="history-meta"><span>3 × 10</span><span>35 кг</span></div>
           </div>
-          <div class="history-right"><div class="history-cal">96</div><div class="history-cal-label">ккал</div></div>
+          <div class="history-right"><div class="history-cal">96</div></div>
         </div>
 
         <div class="history-card">
           <div class="history-icon">🏋</div>
           <div class="history-info">
-            <div class="history-name">Тяга верхнего блока</div>
+            <div class="history-name">Тяга верх. блока</div>
             <div class="history-meta"><span>2 × 8</span><span>50 кг</span></div>
           </div>
-          <div class="history-right"><div class="history-cal">88</div><div class="history-cal-label">ккал</div></div>
+          <div class="history-right"><div class="history-cal">88</div></div>
         </div>
 
         <div class="history-card">
@@ -500,13 +529,10 @@
             <div class="history-name">Разгибание ног</div>
             <div class="history-meta"><span>3 × 15</span><span>30 кг</span></div>
           </div>
-          <div class="history-right"><div class="history-cal">62</div><div class="history-cal-label">ккал</div></div>
+          <div class="history-right"><div class="history-cal">62</div></div>
         </div>
 
-        <div class="motivation-card">
-          <div class="motivation-emoji">💬</div>
-          <div class="motivation-text">Тоннаж на <strong>+340 кг выше</strong> чем в прошлое воскресенье</div>
-        </div>
+        <div class="motivation-mini">💬 Тоннаж <strong>+340 кг</strong> к прошлому вс</div>
 
       </div>
 
@@ -520,9 +546,9 @@
     </div>
   </div>
 
-  <!-- ==================== 6. STATS WITH 2 CHARTS ==================== -->
+  <!-- ==================== 6. STATS ==================== -->
   <div>
-    <div class="screen-label">Статистика (2 графика)</div>
+    <div class="screen-label">Статистика</div>
     <div class="phone">
       <div class="status-bar">
         <span class="time">9:41</span>
@@ -530,7 +556,7 @@
       </div>
       <div class="app-content">
 
-        <div class="greeting"><strong>Статистика</strong></div>
+        <div class="greeting-row"><strong>Статистика</strong></div>
 
         <div class="stats-period">
           <button class="period-btn active">Неделя</button>
@@ -559,7 +585,7 @@
           </div>
         </div>
 
-        <!-- Tonnage chart (NEW) -->
+        <!-- Tonnage -->
         <div class="chart-mini">
           <div class="chart-mini-header">
             <div>
@@ -579,11 +605,11 @@
           </div>
         </div>
 
-        <!-- Power Score chart (NEW) -->
+        <!-- SomnaRank -->
         <div class="chart-mini">
           <div class="chart-mini-header">
             <div>
-              <div class="chart-mini-title">Power Score</div>
+              <div class="chart-mini-title">SomnaRank</div>
               <div class="chart-mini-value">847</div>
             </div>
             <div class="chart-mini-change chart-change up">↑ 34</div>
@@ -591,26 +617,21 @@
           <div class="chart-line">
             <div class="chart-line-point" style="height:15px;"></div>
             <div class="chart-line-point" style="height:22px;"></div>
-            <div class="chart-line-point" style="height:25px;"></div>
             <div class="chart-line-point" style="height:30px;"></div>
             <div class="chart-line-point" style="height:32px;"></div>
             <div class="chart-line-point" style="height:40px;"></div>
-            <div class="chart-line-point" style="height:48px;"></div>
             <div class="chart-line-point" style="height:50px;"></div>
-            <div class="chart-line-point" style="height:55px;"></div>
             <div class="chart-line-point" style="height:58px;"></div>
           </div>
         </div>
 
         <div class="stats-grid">
           <div class="stat-card">
-            <div class="stat-card-icon">🏋</div>
             <div class="stat-card-value">48</div>
             <div class="stat-card-label">подходов</div>
             <div class="stat-card-change up">↑ 12%</div>
           </div>
           <div class="stat-card">
-            <div class="stat-card-icon">⏱</div>
             <div class="stat-card-value">4.8ч</div>
             <div class="stat-card-label">в зале</div>
             <div class="stat-card-change down">↓ 5%</div>
@@ -640,23 +661,21 @@
       <div class="app-content" style="background: linear-gradient(180deg, #0a0a12 0%, #12121e 100%); padding-top: 20px;">
 
         <div style="padding:0 20px; margin-bottom:16px;">
-          <div style="font-size:11px; color:var(--text-muted); font-weight:700; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:12px;">Примеры Push-уведомлений</div>
+          <div style="font-size:11px; color:var(--text-muted); font-weight:700; text-transform:uppercase; letter-spacing:1.5px;">Push-уведомления</div>
         </div>
 
-        <!-- Streak warning -->
         <div class="notification-mockup">
           <div class="notif-app-icon">💪</div>
           <div class="notif-content">
             <div class="notif-header">
               <div class="notif-app-name">SomnaCore</div>
-              <div class="notif-time">2ч назад</div>
+              <div class="notif-time">2ч</div>
             </div>
-            <div class="notif-title">🔥 Стрик сгорит завтра!</div>
-            <div class="notif-body">Ты не был в зале 2 дня. Одна тренировка — и 7 дней сохранятся.</div>
+            <div class="notif-title">🔥 Стрик сгорит!</div>
+            <div class="notif-body">Одна тренировка — и 7 дней сохранятся</div>
           </div>
         </div>
 
-        <!-- PR congrats -->
         <div class="notification-mockup">
           <div class="notif-app-icon">💪</div>
           <div class="notif-content">
@@ -665,24 +684,22 @@
               <div class="notif-time">Сегодня</div>
             </div>
             <div class="notif-title">🏆 Новый рекорд!</div>
-            <div class="notif-body">Жим ногами: 70 кг — твой новый максимум. Power Score: 847 (+12)</div>
+            <div class="notif-body">Жим ногами: 70 кг. SomnaRank: 847 (+12)</div>
           </div>
         </div>
 
-        <!-- Weekly summary -->
         <div class="notification-mockup">
           <div class="notif-app-icon">💪</div>
           <div class="notif-content">
             <div class="notif-header">
               <div class="notif-app-name">SomnaCore</div>
-              <div class="notif-time">Пн 9:00</div>
+              <div class="notif-time">Пн</div>
             </div>
             <div class="notif-title">📊 Итоги недели</div>
-            <div class="notif-body">3,284 ккал · 48 подходов · +18% к прошлой неделе. Ты в топ-4 зала!</div>
+            <div class="notif-body">3,284 ккал · 48 подходов · ↑18%. Ты #4 в зале</div>
           </div>
         </div>
 
-        <!-- Social -->
         <div class="notification-mockup">
           <div class="notif-app-icon">💪</div>
           <div class="notif-content">
@@ -691,11 +708,10 @@
               <div class="notif-time">Вчера</div>
             </div>
             <div class="notif-title">🏅 Даниил обогнал тебя!</div>
-            <div class="notif-body">Даниил М. теперь #3 в рейтинге зала. Ты #4 — отставание всего 42 очка.</div>
+            <div class="notif-body">Он #3, ты #4 — разница 42 очка</div>
           </div>
         </div>
 
-        <!-- Motivation -->
         <div class="notification-mockup">
           <div class="notif-app-icon">💪</div>
           <div class="notif-content">
@@ -704,11 +720,10 @@
               <div class="notif-time">17:00</div>
             </div>
             <div class="notif-title">💬 Время в зал?</div>
-            <div class="notif-body">Обычно ты тренируешься в это время. Сегодня будет 8-й день стрика!</div>
+            <div class="notif-body">Сегодня будет 8-й день стрика</div>
           </div>
         </div>
 
-        <!-- Achievement -->
         <div class="notification-mockup">
           <div class="notif-app-icon">💪</div>
           <div class="notif-content">
@@ -716,8 +731,8 @@
               <div class="notif-app-name">SomnaCore</div>
               <div class="notif-time">Вт</div>
             </div>
-            <div class="notif-title">⭐ Достижение разблокировано!</div>
-            <div class="notif-body">"5000 ккал" — ты сжёг 5000 калорий за всё время. +150 XP</div>
+            <div class="notif-title">⭐ Достижение!</div>
+            <div class="notif-body">«5000 ккал» разблокировано · +150 XP</div>
           </div>
         </div>
 
@@ -736,17 +751,16 @@
       <div class="app-content" style="background: linear-gradient(180deg, #0f0f18 0%, #16162a 100%); padding-top: 20px;">
 
         <div style="padding:0 20px; margin-bottom:16px;">
-          <div style="font-size:11px; color:var(--text-muted); font-weight:700; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:6px;">Виджеты на рабочий стол</div>
-          <div style="font-size:12px; color:var(--text-secondary); margin-bottom:16px;">Мини-версии для главного экрана телефона</div>
+          <div style="font-size:11px; color:var(--text-muted); font-weight:700; text-transform:uppercase; letter-spacing:1.5px;">Виджеты</div>
         </div>
 
-        <!-- Small widgets -->
-        <div style="padding:0 20px; margin-bottom:10px; font-size:10px; color:var(--text-muted); font-weight:700; text-transform:uppercase; letter-spacing:1px;">Маленькие (2×2)</div>
+        <!-- Small widgets 2×2 -->
+        <div style="padding:0 20px; margin-bottom:10px; font-size:10px; color:var(--text-muted); font-weight:700; text-transform:uppercase; letter-spacing:1px;">2×2</div>
         <div class="widget-container">
           <div class="widget widget-accent">
             <div class="widget-app-name">SomnaCore</div>
             <div class="widget-big-value">847</div>
-            <div class="widget-label">Power Score</div>
+            <div class="widget-label">SomnaRank</div>
             <div style="font-size:10px; color:var(--green); font-weight:700; margin-top:4px;">↑ 34</div>
           </div>
           <div class="widget widget-small">
@@ -766,15 +780,15 @@
           </div>
         </div>
 
-        <!-- Medium widget -->
-        <div style="padding:0 20px; margin:16px 0 10px; font-size:10px; color:var(--text-muted); font-weight:700; text-transform:uppercase; letter-spacing:1px;">Средний (4×2)</div>
+        <!-- Wide widget 4×2 -->
+        <div style="padding:0 20px; margin:16px 0 10px; font-size:10px; color:var(--text-muted); font-weight:700; text-transform:uppercase; letter-spacing:1px;">4×2</div>
         <div style="padding:0 20px;">
           <div class="widget widget-wide" style="margin:0;">
             <div class="widget-app-name">SomnaCore</div>
             <div style="display:flex; align-items:center; gap:14px; margin-top:8px;">
               <div>
                 <div class="widget-big-value">412</div>
-                <div class="widget-label">ккал сегодня</div>
+                <div class="widget-label">ккал</div>
               </div>
               <div style="flex:1;">
                 <div class="widget-wide-header">
@@ -793,15 +807,15 @@
               </div>
             </div>
             <div style="display:flex; gap:16px; margin-top:10px;">
-              <div style="font-size:10px; color:var(--text-secondary);"><span style="font-weight:800; color:var(--text);">8</span> подходов</div>
-              <div style="font-size:10px; color:var(--text-secondary);"><span style="font-weight:800; color:var(--text);">72</span> повторения</div>
-              <div style="font-size:10px; color:var(--text-secondary);"><span style="font-weight:800; color:var(--orange);">🔥 7</span> дней</div>
+              <div style="font-size:10px; color:var(--text-secondary);"><span style="font-weight:800; color:var(--text);">8</span> подх</div>
+              <div style="font-size:10px; color:var(--text-secondary);"><span style="font-weight:800; color:var(--text);">72</span> повт</div>
+              <div style="font-size:10px; color:var(--text-secondary);"><span style="font-weight:800; color:var(--orange);">🔥 7</span> дн</div>
             </div>
           </div>
         </div>
 
-        <!-- Ring widget -->
-        <div style="padding:0 20px; margin:16px 0 10px; font-size:10px; color:var(--text-muted); font-weight:700; text-transform:uppercase; letter-spacing:1px;">Кольцо (2×2)</div>
+        <!-- Ring widget 2×2 -->
+        <div style="padding:0 20px; margin:16px 0 10px; font-size:10px; color:var(--text-muted); font-weight:700; text-transform:uppercase; letter-spacing:1px;">Кольцо 2×2</div>
         <div class="widget-container">
           <div class="widget widget-small" style="display:flex; flex-direction:column; align-items:center;">
             <div class="widget-app-name">SomnaCore</div>
@@ -818,10 +832,10 @@
           </div>
           <div class="widget widget-small">
             <div class="widget-app-name">SomnaCore</div>
-            <div style="font-size:12px; font-weight:700; color:var(--text); margin-top:6px;">Следующий:</div>
-            <div style="font-size:10px; color:var(--text-secondary); margin-top:4px;">🦵 Жим ногами</div>
-            <div style="font-size:10px; color:var(--text-secondary); margin-top:2px;">Прошлый раз: 65 кг</div>
-            <div style="font-size:10px; color:var(--accent-light); font-weight:700; margin-top:6px;">Побей рекорд →</div>
+            <div style="font-size:12px; font-weight:700; color:var(--text); margin-top:6px;">Побей рекорд</div>
+            <div style="font-size:10px; color:var(--text-secondary); margin-top:6px;">🦵 Жим ногами</div>
+            <div style="font-size:10px; color:var(--text-secondary); margin-top:2px;">Было: 65 кг</div>
+            <div style="font-size:10px; color:var(--accent-light); font-weight:700; margin-top:6px;">Давай →</div>
           </div>
         </div>
 
