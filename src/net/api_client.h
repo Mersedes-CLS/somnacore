@@ -4,6 +4,6 @@
 
 namespace net {
 
-void sendSet(uint8_t reps, uint16_t romMm, uint32_t durationMs, int weightKg = -1);
+void sendSet(uint8_t reps, uint16_t romMm, uint32_t durationMs, int weightKg = -1, const char* nfcUid = nullptr);
 
 } // namespace net

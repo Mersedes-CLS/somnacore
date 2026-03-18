@@ -2,6 +2,8 @@
 .gradle
 /local.properties
 /.idea
+/app/.idea
+**/.idea
 /build
 /app/build
 /captures

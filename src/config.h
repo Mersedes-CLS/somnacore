@@ -38,12 +38,19 @@ constexpr uint16_t REP_MIN_MS         = 300;
 constexpr uint8_t  REP_STABLE_COUNT   = 3;
 constexpr float    BASELINE_DECAY     = 0.98f;
 constexpr float    BASELINE_ADAPT     = 0.02f;
-constexpr uint32_t SET_TIMEOUT_MS     = 30000;
+constexpr uint32_t SET_TIMEOUT_MS     = 8000;
 constexpr uint8_t  MAX_SETS           = 32;
 constexpr uint8_t  DIST_BUF_SIZE      = 64;
 
 // --- Live weight push ---
 constexpr uint16_t CALIB_LIVE_PUSH_MS = 2000;
+
+// --- NFC (PN532) ---
+constexpr uint8_t  PIN_NFC_IRQ        = 17;
+constexpr uint8_t  PIN_NFC_RESET      = 5;
+constexpr uint16_t NFC_CHECK_MS       = 2000;
+constexpr uint16_t NFC_READ_TIMEOUT_MS = 100;
+constexpr uint32_t NFC_CLEAR_MS       = 60000;  // forget user after 60s no tap
 
 // --- Web server ---
 constexpr uint16_t HTTP_PORT = 80;

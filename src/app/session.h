@@ -12,7 +12,8 @@ enum class SessionState : uint8_t { IDLE, IN_SET, REST };
 class Session {
 public:
     void     setCalibrator(calib::Calibrator* cal) { calibrator_ = cal; }
-    void     feedDistance(uint16_t dist);   // accumulate distance readings during set
+    void     setNfcUid(const char* uid);  // set current NFC user
+    void     feedDistance(uint16_t dist);  // accumulate distance readings (pre-set rest)
     void     feedRep(int16_t romMm);      // called when RepDetector reports a rep
     void     tick();                       // call each loop — checks 30s timeout
     void     reset();
@@ -37,8 +38,11 @@ private:
     uint32_t setStartTime_  = 0;
     SetRecord sets_[MAX_SETS] = {};
 
-    // Distance ring buffer for weight determination
+    // Distance ring buffer for weight determination (pre-set rest samples)
     uint16_t distBuf_[DIST_BUF_SIZE] = {};
     uint8_t  distBufIdx_   = 0;
     uint16_t distBufCount_ = 0;
+
+    // NFC user
+    char     nfcUid_[16]   = {};
 };

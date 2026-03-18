@@ -6,7 +6,7 @@
 
 namespace net {
 
-void sendSet(uint8_t reps, uint16_t romMm, uint32_t durationMs, int weightKg) {
+void sendSet(uint8_t reps, uint16_t romMm, uint32_t durationMs, int weightKg, const char* nfcUid) {
     if (WiFi.status() != WL_CONNECTED) {
         Serial.println("[API] WiFi not connected, skipping POST");
         return;
@@ -32,11 +32,16 @@ void sendSet(uint8_t reps, uint16_t romMm, uint32_t durationMs, int weightKg) {
         body += ",\"weight_kg\":";
         body += weightKg;
     }
+    if (nfcUid && nfcUid[0]) {
+        body += ",\"nfc_uid\":\"";
+        body += nfcUid;
+        body += "\"";
+    }
     body += "}";
 
     int code = http.POST(body);
     if (code > 0) {
-        Serial.print("[API] POST /set → ");
+        Serial.print("[API] POST /set -> ");
         Serial.println(code);
     } else {
         Serial.print("[API] POST failed: ");
